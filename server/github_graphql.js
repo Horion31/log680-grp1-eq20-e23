@@ -48,7 +48,7 @@ const query_pr = {
 
 const query_issue = {
   query: `query{
-        user(login: "Jean-Lamarre") {
+        user(login: "${github_data.username}") {
         issues(last: 100, orderBy: {field:CREATED_AT, direction: DESC}){
         totalCount
         nodes{
