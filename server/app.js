@@ -1,33 +1,31 @@
+require('dotenv').config({ path: '../.env' });
+
 const express = require('express')
 const { graphqlHTTP } = require('express-graphql');
 const bodyParser = require('body-parser');
 const { graphql, buildSchema } = require('graphql');
+
 const db = require('./queries');
 
-require('dotenv').config({path:'../.env'})
+const path = require('path');
+const { GraphQLFileLoader } = require('@graphql-tools/graphql-file-loader');
+const { loadSchemaSync } = require('@graphql-tools/load');
+const { addResolversToSchema } = require('@graphql-tools/schema');
+
+const schema = loadSchemaSync(path.join(__dirname, './schema/schema.docs.graphql'), {
+    loaders: [new GraphQLFileLoader()]
+});
+const resolvers = {};
+const schemaWithResolvers = addResolversToSchema({ schema, resolvers });
+
 
 const app = express()
 const port = 3000
-
-
-const schema = buildSchema(`
-    type Query {
-        hello: String
-    }
-`);
-// const schema = require('./schema/schema');
-
-const root = {
-    hello: () => {
-        return 'Hello world!';
-    },
-};
 
 app.use(bodyParser.json());
 
 app.use('/graphql', graphqlHTTP({
     schema,
-    rootValue: root,
     graphiql: true
 }));
 const baseUrl = "https://api.github.com/graphql";
@@ -37,13 +35,34 @@ const headers = {
     authorization: "bearer " + process.env.GITHUB_TOKEN
 };
 
+const que = {
+    query: ` query {
+        __schema {
+          types {
+            name
+            kind
+            description
+            fields {
+              name
+            }
+          }
+        }
+      }`,
+};
+
 const query = {
     query: ` query {
         repository(owner: "Horion31", name: "log680-grp1-eq20-e23") {
           name,
-          projects (first : 1) { nodes {name} }
+          projectsV2 (first : 10) { 
+            nodes {
+            id
+            title
+            } 
+            
         }
-      }`,
+    }
+}`,
 };
 
 const query2 = {
