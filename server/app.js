@@ -51,6 +51,65 @@ const query = {
 }`,
 };
 
+const query3 = {
+    query: ` query {
+      node(id: "PVT_kwHOAWcErM4AVdZf") {
+        ... on ProjectV2 {
+          items(first: 20) {
+            nodes{
+              fieldValues(first:5) {
+                nodes{                             
+                  ... on ProjectV2ItemFieldSingleSelectValue {
+                    name
+                    
+    }}}}}}
+  }}
+      
+    
+    `,
+};
+
+const queryPullRequest = {
+    query: ` query {
+  repository(owner: "Horion31", name: "log680-grp1-eq20-e23") {
+    name
+    owner {
+      login
+    }
+    description
+    createdAt
+    updatedAt
+    stargazerCount
+    forkCount
+    watchers {
+      totalCount
+    }
+    issues {
+      totalCount
+    }
+    pullRequests(first: 5) {
+      totalCount
+      nodes {
+        number
+        title
+        createdAt
+        updatedAt
+        author {
+          login
+        }
+        body
+        state
+        comments {
+          totalCount
+        }
+      }
+    }
+  }
+}
+
+    `,
+};
+
 app.get('/kanban', async (req, res) => {
     try {
         if (process.env.GITHUB_TOKEN == null)
@@ -59,7 +118,7 @@ app.get('/kanban', async (req, res) => {
         const response = await fetch(baseUrl, {
             method: 'POST',
             headers: headers,
-            body: JSON.stringify(query)
+            body: JSON.stringify(queryPullRequest)
         });
 
         const data = await response.json();
