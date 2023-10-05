@@ -2,7 +2,6 @@ const express = require('express')
 const { graphqlHTTP } = require('express-graphql');
 const bodyParser = require('body-parser');
 const { graphql, buildSchema } = require('graphql');
-const db = require('./queries');
 
 require('dotenv').config({path:'../.env'})
 
@@ -14,7 +13,6 @@ const schema = buildSchema(`
         hello: String
     }
 `);
-// const schema = require('./schema/schema');
 
 const root = {
     hello: () => {
@@ -36,7 +34,7 @@ let differenceInSeconds = 0;
 const dateActuelle = new Date();
 
 //Tache donnée (metrique 1)
-const nomTache  = "Créer des milestones"
+const nomTache  = "Créer une API"
 
 //Nom colonne (metrique 3)
 const NomColonne = "A faire"
@@ -50,7 +48,7 @@ const baseUrl = "https://api.github.com/graphql";
 
 const headers = {
     "Content-Type": "application/json",
-    authorization: "bearer " + process.env.GITHUB_TOKEN //remettre process.env.GITHUB_TOKEN
+    authorization: "bearer " + "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" //CHANGER TOKEN
 };
 
 //requete metriques
