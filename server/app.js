@@ -1,22 +1,22 @@
-require('dotenv').config({ path: '../.env' });
+
+const dotenv = require('dotenv').config({path: ".env"});
 
 const express = require('express')
-const { graphqlHTTP } = require('express-graphql');
+const {graphqlHTTP} = require('express-graphql');
 const bodyParser = require('body-parser');
-const { graphql, buildSchema } = require('graphql');
-
-const db = require('./queries');
 
 const path = require('path');
-const { GraphQLFileLoader } = require('@graphql-tools/graphql-file-loader');
-const { loadSchemaSync } = require('@graphql-tools/load');
-const { addResolversToSchema } = require('@graphql-tools/schema');
+const {GraphQLFileLoader} = require('@graphql-tools/graphql-file-loader');
+const {loadSchemaSync} = require('@graphql-tools/load');
+const {addResolversToSchema} = require('@graphql-tools/schema');
+const {isEmpty} = require("lodash");
 
 const schema = loadSchemaSync(path.join(__dirname, './schema/schema.docs.graphql'), {
     loaders: [new GraphQLFileLoader()]
 });
 const resolvers = {};
-const schemaWithResolvers = addResolversToSchema({ schema, resolvers });
+const schemaWithResolvers = addResolversToSchema({schema, resolvers});
+
 
 
 const app = express()
@@ -28,26 +28,12 @@ app.use('/graphql', graphqlHTTP({
     schema,
     graphiql: true
 }));
+
 const baseUrl = "https://api.github.com/graphql";
 
 const headers = {
     "Content-Type": "application/json",
     authorization: "bearer " + process.env.GITHUB_TOKEN
-};
-
-const que = {
-    query: ` query {
-        __schema {
-          types {
-            name
-            kind
-            description
-            fields {
-              name
-            }
-          }
-        }
-      }`,
 };
 
 const query = {
@@ -65,43 +51,11 @@ const query = {
 }`,
 };
 
-const query2 = {
-    query: ` query{
-        user(login: "${process.env.GITHUB_USERNAME}") {
-        issues(last: 100, orderBy: {field:CREATED_AT, direction: DESC}){
-        totalCount
-        nodes{
-            id
-            closed
-            title
-            createdAt
-          url
-          number
-          assignees(first:100){
-            nodes{
-              avatarUrl
-              name
-              url
-            }
-          }
-          repository{
-            name
-            url
-            owner{
-              login
-              avatarUrl
-              url
-            }
-          }
-        }
-      }
-    }
-      }`,
-};
-
-//begin added
 app.get('/kanban', async (req, res) => {
     try {
+        if (process.env.GITHUB_TOKEN == null)
+            throw new Error("Environment variable GITHUB_TOKEN is undefined. Can't get Authentification on GitHub.")
+
         const response = await fetch(baseUrl, {
             method: 'POST',
             headers: headers,
@@ -112,11 +66,16 @@ app.get('/kanban', async (req, res) => {
 
         res.json(data);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
+
+        var len = error.length;
+        var errorMessage = error;
+        if (len === 0) {
+            errorMessage = 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.';
+        }
+        res.status(500).json(errorMessage.toString());
+
     }
 });
-
 
 app.get("/", (req, res) => {
     res.send("Bienvenue sur la page d'accueil de l'application !");
