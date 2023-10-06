@@ -48,7 +48,7 @@ const baseUrl = "https://api.github.com/graphql";
 
 const headers = {
     "Content-Type": "application/json",
-    authorization: "bearer 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" //CHANGER TOKEN
+    authorization: "bearer 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" //CHANGER TOKEN
 };
 
 //requete metriques
@@ -440,6 +440,118 @@ app.get('/pullrequest/metrique5', async (req, res) => {
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
   }
 });
+
+//metrique visualisation
+app.get('/snapshot', async (req, res) => {
+  try {
+      const response = await fetch(baseUrl, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(query1),
+    });
+    
+    const data = await response.json();
+
+    const kanbanData = {
+      columns: [
+        {
+          title: 'Backlog',
+          tasks: []
+        },
+        {
+          title: 'A faire',
+          tasks: []
+        },
+        {
+          title: 'En cours',
+          tasks: []
+        },
+
+        {
+          title: 'Revue',
+          tasks: []
+        },
+
+        {
+          title: 'Bloqué',
+          tasks: []
+        },
+
+        {
+          title: 'Terminé',
+          tasks: []
+        }
+      ]
+    };
+
+    let i = 0;
+
+    while (i < data.data.node.items.nodes.length) {
+      const node = data.data.node.items.nodes[i];
+      if (node.fieldValues.nodes[4].name === "Backlog") {
+        kanbanData.columns[0].tasks.push(node.fieldValues.nodes[3].text);
+      }
+      else if (node.fieldValues.nodes[4].name === "A faire") {
+        kanbanData.columns[1].tasks.push(node.fieldValues.nodes[3].text);
+      }
+
+      else if (node.fieldValues.nodes[4].name === "En cours") {
+        kanbanData.columns[2].tasks.push(node.fieldValues.nodes[3].text);
+      }
+
+      else if (node.fieldValues.nodes[4].name === "Revue") {
+        kanbanData.columns[3].tasks.push(node.fieldValues.nodes[3].text);
+      }
+
+      else if (node.fieldValues.nodes[4].name === "Bloqué") {
+        kanbanData.columns[4].tasks.push(node.fieldValues.nodes[3].text);
+      }
+
+      else if (node.fieldValues.nodes[4].name === "Terminé") {
+        kanbanData.columns[5].tasks.push(node.fieldValues.nodes[3].text);
+      }
+      
+      i++;
+    }
+    const kanbanHtml = generateKanbanHtml(kanbanData);
+
+    res.send(kanbanHtml);
+    res.json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
+  }
+});
+
+function generateKanbanHtml(kanbanData) {
+  let html = '<html><head><title>Kanban Snapshot</title></head><body>';
+  html += '<div class="kanban-board">';
+
+  // Créez une ligne pour chaque colonne
+  html += '<div class="row">';
+
+  kanbanData.columns.forEach(column => {
+    html += '<div class="column">';
+    html += `<h2>${column.title} (${column.tasks.length} tâches)</h2>`; // Affiche le nombre de tâches
+    // ...
+
+    // Créez une liste pour chaque colonne
+    html += '<ul>';
+
+    column.tasks.forEach(task => {
+      html += `<li class="task">${task}</li>`;
+    });
+
+    html += '</ul>';
+    html += '</div>';
+  });
+
+  html += '</div>'; // Fermez la ligne
+
+  html += '</div></body></html>';
+
+  return html;
+}
 
 
 app.get("/", (req, res) => {
