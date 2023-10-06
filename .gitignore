@@ -47,3 +47,4 @@ lib*.pc
 /portlock/
 .env
 data
+data
