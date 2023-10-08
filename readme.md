@@ -4,7 +4,8 @@
 
 ### Lancement de l'API
 
-Exécuter le fichier __app.js__ dans le dossier *log680-grp1-eq20-e23/server* après s'être assuré d'avoir installé les packages express, express-graphql, node-fetch.
+Avant tout, il faut remplacer le token du fichier, dans la variable *headers* du début du fichier par un token ayant toutes les autorisations d'accès au repertoire et son contenu. 
+Il sera alors possible d'exécuter le fichier __app.js__ dans le dossier *log680-grp1-eq20-e23/server* après s'être assuré d'avoir installé les packages express, express-graphql, node-fetch.
 
 ` > node app.js `
 
