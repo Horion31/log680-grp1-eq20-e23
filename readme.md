@@ -11,6 +11,7 @@ Exécuter le fichier __app.js__ dans le dossier *log680-grp1-eq20-e23/server* ap
 Les réponses pour les différentes URL entrées seront affichés sous le format html sur la page, par soucis de facilité de lecture. Le framework Expressjs a été utilisé.
 
 
+
 ### Métriques Kanban
 
 Voici les métriques liées à un projet Kanban qui on été implémentées : 
@@ -24,6 +25,7 @@ Les routes associées à ces métriques sont :
 2. __https://localhost:3000/kanban/metrique2/:dateDebut/:dateFin__ : remplacer *dateDebut* et *dateFin*.
 3. __https://localhost:3000/kanban/metrique3/:NomColonne__ : remplacer *nomColonne*.
 4. __https://localhost:3000/kanban/metrique4/:dateDebut/:dateFin__ : remplacer *nomColonne*.
+
 
 
 ### Métriques pull requests
@@ -43,4 +45,7 @@ Les routes associées à ces métriques sont :
 5. __https://localhost:3000/pullrequest/metrique5__  
 
 
+
 ### Métrique de Visualisation
+
+Cette métrique affiche les différentes tâches présentent dans chaque colonne (aini que leur nombre) à l'instant actuel. La route associée est : __https://localhost:3000/snapshot__
