@@ -1,7 +1,7 @@
 # Documentation Laboratoire 1
 
 ## API : récupération des métriques
-## Lancement de l'API
+### Lancement de l'API
 
 ### Métriques Kanban
 
