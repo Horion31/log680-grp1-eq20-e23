@@ -38,17 +38,6 @@ let differenceInDays = 0;
 let differenceInSeconds = 0;
 const dateActuelle = new Date();
 
-//Tache donnée (metrique 1)
-//const nomTache  = "Créer des milestones"
-
-//Nom colonne (metrique 3)
-//const NomColonne = "A faire"
-
-//Variables définissant la période choisie (metrique 2 et 4)
-//const dateFin = new Date("2023-12-03");
-//const dateDebut = new Date("2023-09-01");
-
-
 const baseUrl = "https://api.github.com/graphql";
 
 const headers = {
@@ -706,16 +695,11 @@ app.get('/snapshot', async (req, res) => {
 function generateKanbanHtml(kanbanData) {
   let html = '<html><head><title>Kanban Snapshot</title></head><body>';
   html += '<div class="kanban-board">';
-
-  // Créez une ligne pour chaque colonne
   html += '<div class="row">';
 
   kanbanData.columns.forEach(column => {
     html += '<div class="column">';
     html += `<h2>${column.title} (${column.tasks.length} tâches)</h2>`; // Affiche le nombre de tâches
-    // ...
-
-    // Créez une liste pour chaque colonne
     html += '<ul>';
 
     column.tasks.forEach(task => {
@@ -726,8 +710,7 @@ function generateKanbanHtml(kanbanData) {
     html += '</div>';
   });
 
-  html += '</div>'; // Fermez la ligne
-
+  html += '</div>';
   html += '</div></body></html>';
 
   return html;
