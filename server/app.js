@@ -1,4 +1,6 @@
 const express = require('express')
+const cron = require('node-cron');
+const axios = require('axios');
 const { graphqlHTTP } = require('express-graphql');
 const bodyParser = require('body-parser');
 const { graphql, buildSchema } = require('graphql');
@@ -28,27 +30,30 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true
 }));
 
+//Tableau de stockage des messages de console.log
+const logMessages = [];
+
 //VARIABLES METRIQUES
 let differenceInDays = 0;
 let differenceInSeconds = 0;
 const dateActuelle = new Date();
 
 //Tache donnée (metrique 1)
-const nomTache  = "Créer une API"
+//const nomTache  = "Créer des milestones"
 
 //Nom colonne (metrique 3)
-const NomColonne = "A faire"
+//const NomColonne = "A faire"
 
 //Variables définissant la période choisie (metrique 2 et 4)
-const dateFin = new Date("2023-12-03");
-const dateDebut = new Date("2023-09-01");
+//const dateFin = new Date("2023-12-03");
+//const dateDebut = new Date("2023-09-01");
 
 
 const baseUrl = "https://api.github.com/graphql";
 
 const headers = {
     "Content-Type": "application/json",
-    authorization: "bearer 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" //CHANGER TOKEN
+    authorization: "bearer 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" //CHANGER TOKEN
 };
 
 //requete metriques
@@ -123,18 +128,17 @@ repository(owner: "Horion31", name: "log680-grp1-eq20-e23") {
 
 //routes
 
-//Metrique 1
-app.get('/kanban/metrique1', async (req, res) => {
+//Metrique 1 : Lead Time pour une tâche donnée
+app.get('/kanban/metrique1/:nomTache', async (req, res) => {
     try {
-        const response = await fetch(baseUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(query1)
+          const nomTache = req.params.nomTache;     
+          const response = await fetch(baseUrl, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(query1)
         });
 
         const data = await response.json();
-
-        res.json(data);
 
       let i = 0;
       while (i < data.data.node.items.nodes.length) {
@@ -145,7 +149,7 @@ app.get('/kanban/metrique1', async (req, res) => {
             const updatedAt = new Date(node.fieldValues.nodes[4].updatedAt);
             const differenceInMilliseconds = updatedAt - createdAt;
             differenceInSeconds = differenceInMilliseconds / 1000;
-            differenceInDays = differenceInSeconds / (60*60*24);
+            differenceInDays = Math.round(differenceInSeconds / (60*60*24));
             break
           }
       
@@ -153,7 +157,7 @@ app.get('/kanban/metrique1', async (req, res) => {
             const createdAt = new Date(node.fieldValues.nodes[4].createdAt);
             const differenceInMilliseconds = dateActuelle - createdAt;
             differenceInSeconds = differenceInMilliseconds / 1000;
-            differenceInDays = differenceInSeconds / (60*60*24);
+            differenceInDays = Math.round(differenceInSeconds / (60*60*24));
             break
           }
 
@@ -162,7 +166,26 @@ app.get('/kanban/metrique1', async (req, res) => {
       i++;
       }
 
-console.log(`Le leadtime pour la tache donnée "${nomTache}" est de ${differenceInSeconds} secondes, soit ${differenceInDays} jours.`);
+    //console.log(`Le leadtime pour la tache donnée "${nomTache}" est de ${differenceInSeconds} secondes, soit ${differenceInDays} jours.`);
+    //res.json(data);
+
+    logMessages.pop();
+    logMessages.push(`Le leadtime pour la tache donnée "${nomTache}" est de ${differenceInSeconds} secondes, soit ${differenceInDays} jours.`);
+
+    const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+    
+    const pageHtml = `
+      <html>
+        <head>
+          <title>Métrique 1 - Projet Kaban :  Lead Time pour une tâche donnée</title>
+        </head>
+        <body>
+          <h1>Métrique 1 - Projet Kaban :  Lead Time pour une tâche donnée</h1>
+          ${logHtml}
+        </body>
+      </html>
+`;
+  res.send(pageHtml);
 
     } catch (error) {
         console.error(error);
@@ -171,9 +194,11 @@ console.log(`Le leadtime pour la tache donnée "${nomTache}" est de ${difference
 
 });
 
-//Métrique 2
-app.get('/kanban/metrique2', async (req, res) => {
-  try {  
+//Métrique 2 : Lead time pour les tâches terminées dans une période donnée
+app.get('/kanban/metrique2/:dateDebut/:dateFin', async (req, res) => {
+  try {
+      const dateDebut = new Date(req.params.dateDebut);
+      const dateFin = new Date(req.params.dateFin);  
       const response = await fetch(baseUrl, {
       method: 'POST',
       headers: headers,
@@ -182,8 +207,11 @@ app.get('/kanban/metrique2', async (req, res) => {
   
     const data = await response.json();
 
-    console.log(`Pour la periode de ${dateDebut} à ${dateFin} \n`);
-
+    //console.log(`Pour la periode de ${dateDebut} à ${dateFin} \n`);
+    logMessages.pop();
+    //logMessages.push(`Pour la periode de ${dateDebut} à ${dateFin} : \n\n`);
+    
+    
     let i = 0;
     while (i < data.data.node.items.nodes.length) {
       const node = data.data.node.items.nodes[i];
@@ -193,14 +221,36 @@ app.get('/kanban/metrique2', async (req, res) => {
         const updatedAt = new Date(node.fieldValues.nodes[4].updatedAt);
         const differenceInMilliseconds = updatedAt - createdAt;
         differenceInSeconds = differenceInMilliseconds / 1000;
-        differenceInDays = differenceInSeconds / (60*60*24);
-        console.log(`Le Lead time pour la tache ${node.fieldValues.nodes[3].text} : ${differenceInSeconds} secondes, soit ${differenceInDays} jours`);
+        differenceInDays = Math.round(differenceInSeconds / (60*60*24));
+        logMessages.push(`Le Lead time pour la tache ${node.fieldValues.nodes[3].text} : ${differenceInSeconds} secondes, soit ${differenceInDays} jours`);
+        //logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+        //console.log(`Le Lead time pour la tache ${node.fieldValues.nodes[3].text} : ${differenceInSeconds} secondes, soit ${differenceInDays} jours`);
 
       }
       i++;
     }
+    const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+    
+    const pageHtml = `
+      <html>
+        <head>
+          <title>Métrique 2 - Projet Kaban : Lead time pour les tâches terminées dans une période donnée</title>
+        </head>
+        <body>
+          <h1>Métrique 2 - Projet Kaban : Lead time pour les tâches terminées dans une période donnée</h1>
+          ${logHtml}
+        </body>
+      </html>
+    `;
+    res.send(pageHtml);
 
-    res.json(data);
+    let j = 0;
+    while (j < data.data.node.items.nodes.length) {
+      logMessages.pop();
+      j++;
+    }
+    
+    //res.json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
@@ -209,16 +259,16 @@ app.get('/kanban/metrique2', async (req, res) => {
 
 
 
-//Métrique 3
-app.get('/kanban/metrique3', async (req, res) => {
+//Métrique 3 : Nombre de tâches actives pour une colonne donnée
+app.get('/kanban/metrique3/:NomColonne', async (req, res) => {
   try {
+      const NomColonne = req.params.NomColonne;
       const response = await fetch(baseUrl, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(query1),
     });
     
-    //Comptage du nombre de tâche pour une colonne donnée
     let compteurTachesColonne = 0;
     const data = await response.json();
     let i = 0;
@@ -229,9 +279,30 @@ app.get('/kanban/metrique3', async (req, res) => {
       }
       i++;
     }
-console.log(`Le nombre de tâches dans la colonne "${NomColonne}" est : ${compteurTachesColonne}`);
 
-    res.json(data);
+    logMessages.pop();
+    logMessages.push(`Le nombre de tâches dans la colonne "${NomColonne}" est : ${compteurTachesColonne}`);
+
+    const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+    
+    const pageHtml = `
+      <html>
+        <head>
+          <title>Métrique 3 - Projet Kaban : Nombre de tâches actives pour une colonne donnée</title>
+        </head>
+        <body>
+          <h1>Métrique 3 - Projet Kaban : Nombre de tâches actives pour une colonne donnée</h1>
+          ${logHtml}
+        </body>
+      </html>
+
+
+
+    `;
+    res.send(pageHtml);
+
+    //console.log(`Le nombre de tâches dans la colonne "${NomColonne}" est : ${compteurTachesColonne}`);
+    //res.json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
@@ -239,9 +310,11 @@ console.log(`Le nombre de tâches dans la colonne "${NomColonne}" est : ${compte
 });
 
 
-//Métrique 4
-app.get('/kanban/metrique4', async (req, res) => {
+//Métrique 4 : nombre de tâches complétées pour une période donnée
+app.get('/kanban/metrique4/:dateDebut/:dateFin', async (req, res) => {
   try {
+      const dateDebut = new Date(req.params.dateDebut);
+      const dateFin = new Date(req.params.dateFin);
       const response = await fetch(baseUrl, {
       method: 'POST',
       headers: headers,
@@ -249,8 +322,6 @@ app.get('/kanban/metrique4', async (req, res) => {
     });
     
     const data = await response.json();
-
-    //Comptage du nombre de tâches terminées pour une période donnée
     let compteurTachesFinies = 0;
     let i = 0;
 
@@ -262,9 +333,27 @@ app.get('/kanban/metrique4', async (req, res) => {
       }
       i++;
     }
-console.log(`Le nombre de tâches terminées pour la periode de ${dateDebut} à ${dateFin} est : ${compteurTachesFinies}`);
 
-    res.json(data);
+    logMessages.pop();
+    logMessages.push(`Le nombre de tâches terminées pour la periode de ${dateDebut} à ${dateFin} est : ${compteurTachesFinies}`);
+
+    const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+    
+    const pageHtml = `
+      <html>
+        <head>
+          <title>Métrique 4 - Projet Kaban : Nombre de tâches complétées pour une période donnée</title>
+        </head>
+        <body>
+          <h1>Métrique 4 - Projet Kaban : Nombre de tâches complétées pour une période donnée</h1>
+          ${logHtml}
+        </body>
+      </html>
+    `;
+    res.send(pageHtml);
+
+    //console.log(`Le nombre de tâches terminées pour la periode de ${dateDebut} à ${dateFin} est : ${compteurTachesFinies}`);
+    //res.json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
@@ -289,14 +378,30 @@ app.get('/pullrequest/metrique1', async (req, res) => {
     const createdAt = new Date(pullRequest.createdAt);
     const updatedAt = new Date(pullRequest.updatedAt);
     const timeDiff = (updatedAt - createdAt) / 1000; 
+    
+    logMessages.pop();
+    logMessages.push(`La pull-request appelée "${pullRequest.title}" a été révisée la première fois au bout de ${timeDiff} secondes.`);
 
-    console.log(`La pull-request appelée "${pullRequest.title}" a été révisée la première fois au bout de ${timeDiff} secondes.`);
+    //console.log(`La pull-request appelée "${pullRequest.title}" a été révisée la première fois au bout de ${timeDiff} secondes.`);
     
   i++;
   }
 
+  const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+    //res.json(data);
+    const pageHtml = `
+      <html>
+        <head>
+          <title>Métrique 1 - Pull Request Temps de réaction après le lancement de la pull request</title>
+        </head>
+        <body>
+          <h1>Métrique 1 - Pull Request Temps de réaction après le lancement de la pull request</h1>
+          ${logHtml}
+        </body>
+      </html>
+    `;
+    res.send(pageHtml);
 
-    res.json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
@@ -321,19 +426,37 @@ app.get('/pullrequest/metrique2', async (req, res) => {
       const closedAt = new Date(pullRequest.closedAt);
       if (pullRequest.closedAt === null) {
         const timeDiff = (dateActuelle - createdAt) / 1000;
-        console.log(`le temps de fusion pour la pull request appelée "${pullRequest.title}" est : ${timeDiff} secondes `);
+
+        logMessages.pop();
+        logMessages.push(`Le temps de fusion pour la pull request appelée "${pullRequest.title}" est : ${timeDiff} secondes`);
+
+        //console.log(`Le temps de fusion pour la pull request appelée "${pullRequest.title}" est : ${timeDiff} secondes `);
       }
       else {
         const timeDiff2 = (closedAt - createdAt) / 1000;
-        console.log(`le temps de fusion pour la pull request appelée "${pullRequest.title}" est : ${timeDiff2} secondes `);
+        logMessages.pop();
+        logMessages.push(`Le temps de fusion pour la pull request appelée "${pullRequest.title}" est : ${timeDiff2} secondes`);
+        //console.log(`le temps de fusion pour la pull request appelée "${pullRequest.title}" est : ${timeDiff2} secondes `);
       }
       
       i++;
     }
 
+    const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+    //res.json(data);
+    const pageHtml = `
+      <html>
+        <head>
+          <title>Métrique 2 - Pull Request Temps de fusion</title>
+        </head>
+        <body>
+          <h1>Métrique 2 - Pull Request Temps de fusion</h1>
+          ${logHtml}
+        </body>
+      </html>
+    `;
+    res.send(pageHtml);
 
-
-    res.json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
@@ -364,10 +487,25 @@ app.get('/pullrequest/metrique3', async (req, res) => {
       }
       i++;
     }
-console.log(`Le nombre de pull request actives pour la periode de ${dateDebut} à ${dateFin} est : ${compteurPR}`);
+  //console.log(`Le nombre de pull request actives pour la periode de ${dateDebut} à ${dateFin} est : ${compteurPR}`);
+  logMessages.pop();
+  logMessages.push(`Le nombre de pull request actives pour la periode de ${dateDebut} à ${dateFin} est : ${compteurPR}`);
+  const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+  const pageHtml = `
+    <html>
+      <head>
+        <title>Métrique 3 - Pull Request Acitves pour une période donnée</title>
+      </head>
+      <body>
+        <h1>Métrique 3 - Pull Request Acitves pour une période donnée</h1>
+        ${logHtml}
+      </body>
+    </html>
+  `;
 
+  res.send(pageHtml);
 
-    res.json(data);
+  //res.json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
@@ -393,11 +531,29 @@ app.get('/pullrequest/metrique4', async (req, res) => {
       const createdAt = new Date(pullRequest.createdAt);
       const closedAt = new Date(pullRequest.closedAt);
       if ((createdAt <= dateFin) && ((closedAt >= dateFin)||(pullRequest.closedAt == null))) {
-        console.log(`Le nombre de commentaires pour la pull request appelée "${pullRequest.title}" pour la periode de ${dateDebut} à ${dateFin} est : "${pullRequest.comments.totalCount}"`);
+        logMessages.pop();
+        logMessages.push(`Le nombre de commentaires pour la pull request appelée "${pullRequest.title}" pour la période de ${dateDebut} à ${dateFin} est : "${pullRequest.comments.totalCount}"`);
+      
+        //console.log(`Le nombre de commentaires pour la pull request appelée "${pullRequest.title}" pour la periode de ${dateDebut} à ${dateFin} est : "${pullRequest.comments.totalCount}"`);
       }
       i++;
     }
-    res.json(data);
+
+    const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+    //res.json(data);
+    const pageHtml = `
+      <html>
+        <head>
+          <title>Métrique 4 - Pull Request Commentaires</title>
+        </head>
+        <body>
+          <h1>Métrique 4 - Pull Request Commentaires</h1>
+          ${logHtml}
+        </body>
+      </html>
+    `;
+    res.send(pageHtml);
+    //logMessages = [];
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
@@ -432,14 +588,32 @@ app.get('/pullrequest/metrique5', async (req, res) => {
     }
     const taux = (compteurMerged / compteurOpen)*100;
 
-    console.log(`Le taux de succès des pull request est de : "${taux}%"`);
+    //console.log(`Le taux de succès des pull request est de : "${taux}%"`);
+    //res.json(data);
+    logMessages.pop();
+    logMessages.push(`Le taux de succès des pull request est de : "${taux}%"`);
+    const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+    const pageHtml = `
+      <html>
+        <head>
+          <title>Métrique 5 - Pull Request Taux de succès</title>
+        </head>
+        <body>
+          <h1>Métrique 5 - Pull Request Taux de succès</h1>
+          ${logHtml}
+        </body>
+      </html>
+    `;
 
-    res.json(data);
+    res.send(pageHtml);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
   }
 });
+
+
 
 //metrique visualisation
 app.get('/snapshot', async (req, res) => {
@@ -448,6 +622,7 @@ app.get('/snapshot', async (req, res) => {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(query1),
+      
     });
     
     const data = await response.json();
@@ -485,6 +660,7 @@ app.get('/snapshot', async (req, res) => {
     };
 
     let i = 0;
+    let j = 0;
 
     while (i < data.data.node.items.nodes.length) {
       const node = data.data.node.items.nodes[i];
@@ -516,12 +692,16 @@ app.get('/snapshot', async (req, res) => {
     const kanbanHtml = generateKanbanHtml(kanbanData);
 
     res.send(kanbanHtml);
-    res.json(data);
+
+    //res.json(data);
+       
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
   }
 });
+
+
 
 function generateKanbanHtml(kanbanData) {
   let html = '<html><head><title>Kanban Snapshot</title></head><body>';
