@@ -8,17 +8,39 @@ Exécuter le fichier __app.js__ dans le dossier *log680-grp1-eq20-e23/server* ap
 
 ` > node app.js `
 
+Les réponses pour les différentes URL entrées seront affichés sous le format html sur la page, par soucis de facilité de lecture. Le framework Expressjs a été utilisé.
+
 
 ### Métriques Kanban
 
-Voici les métriques implémentées
+Voici les métriques liées à un projet Kanban qui on été implémentées : 
+1. Métrique 1 : Temps (lead time) pour une tâche donnée
+2. Métrique 2 : Temps (lead time) pour les tâches terminées dans une période donnée
+3. Métrique 3 : Nombre de tâches actives pour une colonne donnée
+4. Métrique 4 : Nombre de tâches complétés pour une période donnée
 
 Les routes associées à ces métriques sont :  
 1. __https://localhost:3000/kanban/metrique1/:nomTache__ : remplacer *nomTache*.
 2. __https://localhost:3000/kanban/metrique2/:dateDebut/:dateFin__ : remplacer *dateDebut* et *dateFin*.
 3. __https://localhost:3000/kanban/metrique3/:NomColonne__ : remplacer *nomColonne*.
-4.  __https://localhost:3000/kanban/metrique4/:dateDebut/:dateFin__ : remplacer *nomColonne*.
+4. __https://localhost:3000/kanban/metrique4/:dateDebut/:dateFin__ : remplacer *nomColonne*.
 
-### Métriques Pull-requests
+
+### Métriques pull requests
+
+Les métriques pull requests choisies sont les suivantes:
+1. Métrique 1 : Temps de réaction après le lancement des pull requests
+2. Métrique 2 : Temps de fusion des pull requests
+3. Métrique 3 : Nombre de pull requests actives pour une période donnée
+4. Métrique 4 : Nombre de commentaires pour les pull requests pour une période donnée
+5. Métrique 5 : Taux de succès des pull requests (pourcentage de pull requests qui sont fusionnées par rapport au nombre total de pull requests ouvertes)
+
+Les routes associées à ces métriques sont :  
+1. __https://localhost:3000/pullrequest/metrique1__ 
+2. __https://localhost:3000/pullrequest/metrique2__
+3. __https://localhost:3000/pullrequest/metrique3__
+4. __https://localhost:3000/pullrequest/metrique4__
+5. __https://localhost:3000/pullrequest/metrique5__  
+
 
 ### Métrique de Visualisation
