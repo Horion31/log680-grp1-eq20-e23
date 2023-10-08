@@ -4,12 +4,12 @@
 
 ### Lancement de l'API
 
-Avant tout, il faut remplacer le token du fichier, dans la variable *headers* du début du fichier par un token ayant toutes les autorisations d'accès au repertoire et son contenu. 
+__Avant tout, il faut remplacer le token du fichier, dans la variable *headers* du début du fichier par un token ayant toutes les autorisations d'accès au repertoire et son contenu.__  
 Il sera alors possible d'exécuter le fichier __app.js__ dans le dossier *log680-grp1-eq20-e23/server* après s'être assuré d'avoir installé les packages express, express-graphql, node-fetch.
 
 ` > node app.js `
 
-Les réponses pour les différentes URL entrées seront affichés sous le format html sur la page, par soucis de facilité de lecture. Le framework Expressjs a été utilisé.
+Les réponses pour les différentes URL entrées seront affichées sous le format html sur la page, par soucis de facilité de lecture. Le framework Expressjs a été utilisé.
 
 
 
