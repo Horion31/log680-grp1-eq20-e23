@@ -32,7 +32,7 @@ Les routes associées à ces métriques sont :
 ### Métriques pull requests
 
 Les métriques pull requests choisies sont les suivantes:
-1. Métrique 1 : Temps de réaction après le lancement des pull requests
+1. Métrique 1 : Temps entre le lancement de la pull-request et sa dernière update
 2. Métrique 2 : Temps de fusion des pull requests
 3. Métrique 3 : Nombre de pull requests actives pour une période donnée
 4. Métrique 4 : Nombre de commentaires pour les pull requests pour une période donnée
