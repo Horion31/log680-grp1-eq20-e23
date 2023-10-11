@@ -42,7 +42,7 @@ const baseUrl = "https://api.github.com/graphql";
 
 const headers = {
     "Content-Type": "application/json",
-    authorization: "bearer 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" //CHANGER TOKEN
+    authorization: "bearer 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" //CHANGER TOKEN
 };
 
 //requete metriques
@@ -369,7 +369,7 @@ app.get('/pullrequest/metrique1', async (req, res) => {
     const timeDiff = (updatedAt - createdAt) / 1000; 
     
     logMessages.pop();
-    logMessages.push(`La pull-request appelée "${pullRequest.title}" a été révisée la première fois au bout de ${timeDiff} secondes.`);
+    logMessages.push(`Le temps entre le lancement de la pull-request appelée "${pullRequest.title}"  et sa dernière update est de ${timeDiff} secondes.`);
 
     //console.log(`La pull-request appelée "${pullRequest.title}" a été révisée la première fois au bout de ${timeDiff} secondes.`);
     
@@ -396,6 +396,7 @@ app.get('/pullrequest/metrique1', async (req, res) => {
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
   }
 });
+
 
 //metrique2 : temps de fusion des pull request
 app.get('/pullrequest/metrique2', async (req, res) => {
