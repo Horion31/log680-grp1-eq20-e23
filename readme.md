@@ -17,15 +17,19 @@ Les réponses pour les différentes URL entrées seront affichées sous le forma
 
 Voici les métriques liées à un projet Kanban qui on été implémentées : 
 1. Métrique 1 : Temps (lead time) pour une tâche donnée
-2. Métrique 2 : Temps (lead time) pour les tâches terminées dans une période donnée
-3. Métrique 3 : Nombre de tâches actives pour une colonne donnée
-4. Métrique 4 : Nombre de tâches complétés pour une période donnée
+   Si la tâche est terminée, le lead time s’obtient par la différence entre la date d’update dans la colonne terminée (car la tâche est supposée finie quand elle arrive dans cette colonne) et la date de création de cette tâche.  
+   Si la tâche est encore en cours, le lead time est obtenu par la différence entre la date actuelle et la date de création de la tâche. 
+   Le nom de la tâche spécifique *nomTache* est récupéré dans l'URL entré.  
+   
+3. Métrique 2 : Temps (lead time) pour les tâches terminées dans une période donnée
+4. Métrique 3 : Nombre de tâches actives pour une colonne donnée
+5. Métrique 4 : Nombre de tâches complétés pour une période donnée  
 
 Les routes associées à ces métriques sont :  
 1. __https://localhost:3000/kanban/metrique1/:nomTache__ : remplacer *nomTache*.
 2. __https://localhost:3000/kanban/metrique2/:dateDebut/:dateFin__ : remplacer *dateDebut* et *dateFin*.
 3. __https://localhost:3000/kanban/metrique3/:NomColonne__ : remplacer *nomColonne*.
-4. __https://localhost:3000/kanban/metrique4/:dateDebut/:dateFin__ : remplacer *nomColonne*.
+4. __https://localhost:3000/kanban/metrique4/:dateDebut/:dateFin__ : remplacer *nomColonne*.  
 
 
 
