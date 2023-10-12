@@ -42,11 +42,20 @@ Les routes associées à ces métriques sont :
 ### Métriques pull requests
 
 Les métriques pull requests choisies sont les suivantes:
-1. Métrique 1 : Temps entre le lancement de la pull-request et sa dernière update
-2. Métrique 2 : Temps de fusion des pull requests
-3. Métrique 3 : Nombre de pull requests actives pour une période donnée
-4. Métrique 4 : Nombre de commentaires pour les pull requests pour une période donnée
-5. Métrique 5 : Taux de succès des pull requests (pourcentage de pull requests qui sont fusionnées par rapport au nombre total de pull requests ouvertes)
+1. __Métrique 1 : Temps entre le lancement de la pull-request et sa dernière update.__  
+Cette métrique a été choisie pour mettre en évidence la perte de temps entre le lancement de la pull-request et la dernière fois qu’elle a été revue. Cela se calcule simplement en prenant la différence entre la date de création de la pull request et la date de son update. 
+
+2. __Métrique 2 : Temps de fusion des pull requests.__  
+Cette métrique a été choisie pour montrer l’équivalent du lead time pour une tâche, mais qui est ici appliqué à la pull request. Cela met en avant le temps requis pour une pull request pour être fermée. Ce temps se calcule en prenant la différence entre l’ouverture et la fermeture de la pull request. 
+
+3. __Métrique 3 : Nombre de pull requests actives pour une période donnée.__  
+Cette métrique a été choisie car elle est très importante en DevOps : elle permet de montrer le nombre de demande de fusion qui se font dans une même période, ce qui  
+
+4. __Métrique 4 : Nombre de commentaires pour les pull requests pour une période donnée.__
+Cette métrique est importante pour montrer le manque d’efficacité des pull requests, l’efficacité du travail ou encore l’efficacité en termes de communication également (partage de connaissance par exemple). Si on a beaucoup de commentaires, c’est que l’efficacité générale n’est pas correcte. 
+
+5. __Métrique 5 : Taux de succès des pull requests (pourcentage de pull requests qui sont fusionnées par rapport au nombre total de pull requests ouvertes).__
+Cette métrique a été choisie pour montrer le taux de réussite des demandes de fusion. Elle s’obtient en prenant le quotient du nombre de pull request fusionnées sur le nom de pull requests ouvertes, le tout multiplié par 100.   
 
 Les routes associées à ces métriques sont :  
 1. __https://localhost:3000/pullrequest/metrique1__ 
