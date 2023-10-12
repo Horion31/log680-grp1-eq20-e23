@@ -36,7 +36,7 @@ Les routes associées à ces métriques sont :
 2. __https://localhost:3000/kanban/metrique2/:dateDebut/:dateFin__ : remplacer *dateDebut* et *dateFin*.
 3. __https://localhost:3000/kanban/metrique3/:NomColonne__ : remplacer *nomColonne*.
 4. __https://localhost:3000/kanban/metrique4/:dateDebut/:dateFin__ : remplacer *nomColonne*.  
-
+>
 \n
 
 ### Métriques pull requests
