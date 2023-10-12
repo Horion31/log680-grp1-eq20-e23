@@ -48,13 +48,13 @@ Les métriques pull requests choisies sont les suivantes:
 Cette métrique a été choisie pour mettre en évidence la perte de temps entre le lancement de la pull-request et la dernière fois qu’elle a été revue. Cela se calcule simplement en prenant la différence entre la date de création de la pull request et la date de son update. 
 
 2. __Métrique 2 : Temps de fusion des pull requests.__  
-Cette métrique a été choisie pour montrer l’équivalent du lead time pour une tâche, mais qui est ici appliqué à la pull request. Cela met en avant le temps requis pour une pull request pour être fermée. Ce temps se calcule en prenant la différence entre l’ouverture et la fermeture de la pull request. 
+Cette métrique a été choisie pour montrer l’équivalent du lead time pour une tâche, mais qui est ici appliqué à la pull request. Cela met en avant le temps requis pour une pull request pour être fermée. Ce temps se calcule en prenant la différence entre l’ouverture et la fermeture de la pull request. Ceci est un indicateur significatif pour estimer les délais de déploiement de code.
 
 3. __Métrique 3 : Nombre de pull requests actives pour une période donnée.__  
-Cette métrique a été choisie car elle est très importante en DevOps : elle permet de montrer le nombre de demande de fusion qui se font dans une même période, ce qui  
+Cette métrique a été choisie car elle est très importante en DevOps : elle permet de montrer le nombre de demande de fusion qui se font dans une même période, ce qui indique la fréquence d'intégration de code pour l'équipe pour un déploiement continu.
 
 4. __Métrique 4 : Nombre de commentaires pour les pull requests pour une période donnée.__  
-Cette métrique est importante pour montrer le manque d’efficacité des pull requests, l’efficacité du travail ou encore l’efficacité en termes de communication également (partage de connaissance par exemple). Si on a beaucoup de commentaires, c’est que l’efficacité générale n’est pas correcte à cause d'un surplus de transfert d'informations.
+Cette métrique est importante pour montrer le manque d’efficacité des pull requests, l’efficacité du travail ou encore l’efficacité en termes de communication également (partage de connaissance par exemple). Si on a beaucoup de commentaires, c’est que l’efficacité générale n’est pas correcte à cause d'un mauvais de transfert d'informations.
 
 5. __Métrique 5 : Taux de succès des pull requests (pourcentage de pull requests qui sont fusionnées par rapport au nombre total de pull requests ouvertes).__  
 Cette métrique a été choisie pour montrer le taux de réussite des demandes de fusion. Elle s’obtient en prenant le quotient du nombre de pull request fusionnées sur le nom de pull requests ouvertes, le tout multiplié par 100. Ce taux est similaire au %C/A (pourcentage complet et exact) qui représente la qualité du travail.
