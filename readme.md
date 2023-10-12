@@ -1,10 +1,12 @@
 # Documentation Laboratoire 1
 
 ## API : récupération des métriques
+Cette API agit sur le répertoire actuel *log680-grp1-eq20-e23*.
+<br>
 
 ### Lancement de l'API
 
-__Avant tout, il faut remplacer le token du fichier, dans la variable *headers* du début du fichier par un token ayant toutes les autorisations d'accès au repertoire et son contenu.__  
+__Avant tout, il faut remplacer le token du fichier app.js, dans la variable *headers* du début du fichier par un token ayant toutes les autorisations d'accès au repertoire et son contenu. Pour adapter cette API à un autre répertoire, veuillez modifier les deux requêtes du fichier__  
 Il sera alors possible d'exécuter le fichier __app.js__ dans le dossier *log680-grp1-eq20-e23/server* après s'être assuré d'avoir installé les packages express, express-graphql, node-fetch.
 
 ` > node app.js `
