@@ -28,7 +28,8 @@ Voici les métriques liées à un projet Kanban qui on été implémentées :
    Ce nombre s’obtient à l’aide d’un compteur qui s’incrémente à chaque correspondance entre le nom de la colonne récupéré choisi et les informations du tableau Kanban. 
 
 5. __Métrique 4 : Nombre de tâches complétés pour une période donnée.__
-   Ce nombre d’obtient également au moyen d’un compteur qui s’incrémenté lorsque le nom de la colonne qui contient la tâche correspond à la colonne “Terminé”.     
+   Ce nombre d’obtient également au moyen d’un compteur qui s’incrémenté lorsque le nom de la colonne qui contient la tâche correspond à la colonne “Terminé”.
+        
 
 Les routes associées à ces métriques sont :  
 1. __https://localhost:3000/kanban/metrique1/:nomTache__ : remplacer *nomTache*.
