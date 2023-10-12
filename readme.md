@@ -16,18 +16,18 @@ Les réponses pour les différentes URL entrées seront affichées sous le forma
 ### Métriques Kanban
 
 Voici les métriques liées à un projet Kanban qui on été implémentées : 
-1. __Métrique 1 : Temps (lead time) pour une tâche donnée__  
+1. __Métrique 1 : Temps (lead time) pour une tâche donnée.__  
    Si la tâche est terminée, le lead time s’obtient par la différence entre la date d’update dans la colonne terminée (car la tâche est supposée finie quand elle arrive dans cette colonne) et la date de création de cette tâche.  
    Si la tâche est encore en cours, le lead time est obtenu par la différence entre la date actuelle et la date de création de la tâche. 
    Le nom de la tâche spécifique *nomTache* est récupéré dans l'URL entré.  
    
-3. __Métrique 2 : Temps (lead time) pour les tâches terminées dans une période donnée__  
+3. __Métrique 2 : Temps (lead time) pour les tâches terminées dans une période donnée.__  
    Cette métrique reprend le même principe que la métrique précédente. En plus, elle vérifie que la date de création et de fermeture de la tâche est bien comprise dans la période récupérée dans la requête. 
    
-4. __Métrique 3 : Nombre de tâches actives pour une colonne donnée__  
+4. __Métrique 3 : Nombre de tâches actives pour une colonne donnée.__  
    Ce nombre s’obtient à l’aide d’un compteur qui s’incrémente à chaque correspondance entre le nom de la colonne récupéré choisi et les informations du tableau Kanban. 
 
-5. __Métrique 4 : Nombre de tâches complétés pour une période donnée__
+5. __Métrique 4 : Nombre de tâches complétés pour une période donnée.__
    Ce nombre d’obtient également au moyen d’un compteur qui s’incrémenté lorsque le nom de la colonne qui contient la tâche correspond à la colonne “Terminé”.     
 
 Les routes associées à ces métriques sont :  
