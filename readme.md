@@ -64,7 +64,7 @@ Les routes associées à ces métriques sont :
 4. __https://localhost:3000/pullrequest/metrique4__
 5. __https://localhost:3000/pullrequest/metrique5__  
 
-                                                                                                                                                                                                                                                                
+<br>
 
 ### Métrique de Visualisation
 
