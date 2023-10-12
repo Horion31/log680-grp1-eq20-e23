@@ -1,7 +1,7 @@
 # Documentation Laboratoire 1
 
 ## API : récupération des métriques
-Cette API agit sur le répertoire actuel *log680-grp1-eq20-e23*.
+Cette API agit sur le répertoire actuel *Horion31/log680-grp1-eq20-e23*.
 <br>
 
 ### Lancement de l'API
