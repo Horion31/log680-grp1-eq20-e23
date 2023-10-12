@@ -11,7 +11,8 @@ Il sera alors possible d'exécuter le fichier __app.js__ dans le dossier *log680
 
 Les réponses pour les différentes URL entrées seront affichées sous le format html sur la page, par soucis de facilité de lecture. Le framework Expressjs a été utilisé.
 
-<br>                                              
+<br>
+<br>
 
 ### Métriques Kanban
 
@@ -25,11 +26,11 @@ Voici les métriques liées à un projet Kanban qui on été implémentées :
    Cette métrique reprend le même principe que la métrique précédente. En plus, elle vérifie que la date de création et de fermeture de la tâche est bien comprise dans la période récupérée dans la requête. 
    
 4. __Métrique 3 : Nombre de tâches actives pour une colonne donnée.__  
-   Ce nombre s’obtient à l’aide d’un compteur qui s’incrémente à chaque correspondance entre le nom de la colonne récupéré choisi et les informations du tableau Kanban. 
+   Ce nombre s’obtient à l’aide d’un compteur qui s’incrémente à chaque correspondance entre le nom de la colonne récupéré choisi et les informations du tableau Kanban. Cette métrique est importante pour identifier une contrainte et contrôler le nombre de tâches. Cela permet par la suite de limiter le nombre de travaux en cours.
 
-5. __Métrique 4 : Nombre de tâches complétés pour une période donnée.__
-   Ce nombre d’obtient également au moyen d’un compteur qui s’incrémenté lorsque le nom de la colonne qui contient la tâche correspond à la colonne “Terminé”.
-        
+5. __Métrique 4 : Nombre de tâches complétés pour une période donnée.__  
+   Ce nombre d’obtient également au moyen d’un compteur qui s’incrémente lorsque le nom de la colonne qui contient la tâche correspond à la colonne “Terminé”. Cette métrique est une première étape à la limitation des travaux en cours, car cela indique que l'équipe a plus tendance à commencer de nouvelles tâches qu'à finir celles qui sont déjà commencées.
+<br>      
 
 Les routes associées à ces métriques sont :  
 1. __https://localhost:3000/kanban/metrique1/:nomTache__ : remplacer *nomTache*.
@@ -37,7 +38,8 @@ Les routes associées à ces métriques sont :
 3. __https://localhost:3000/kanban/metrique3/:NomColonne__ : remplacer *nomColonne*.
 4. __https://localhost:3000/kanban/metrique4/:dateDebut/:dateFin__ : remplacer *nomColonne*.  
 
-<br>                                              
+<br>
+<br>
 
 ### Métriques pull requests
 
@@ -51,11 +53,12 @@ Cette métrique a été choisie pour montrer l’équivalent du lead time pour u
 3. __Métrique 3 : Nombre de pull requests actives pour une période donnée.__  
 Cette métrique a été choisie car elle est très importante en DevOps : elle permet de montrer le nombre de demande de fusion qui se font dans une même période, ce qui  
 
-4. __Métrique 4 : Nombre de commentaires pour les pull requests pour une période donnée.__
-Cette métrique est importante pour montrer le manque d’efficacité des pull requests, l’efficacité du travail ou encore l’efficacité en termes de communication également (partage de connaissance par exemple). Si on a beaucoup de commentaires, c’est que l’efficacité générale n’est pas correcte. 
+4. __Métrique 4 : Nombre de commentaires pour les pull requests pour une période donnée.__  
+Cette métrique est importante pour montrer le manque d’efficacité des pull requests, l’efficacité du travail ou encore l’efficacité en termes de communication également (partage de connaissance par exemple). Si on a beaucoup de commentaires, c’est que l’efficacité générale n’est pas correcte à cause d'un surplus de transfert d'informations.
 
-5. __Métrique 5 : Taux de succès des pull requests (pourcentage de pull requests qui sont fusionnées par rapport au nombre total de pull requests ouvertes).__
-Cette métrique a été choisie pour montrer le taux de réussite des demandes de fusion. Elle s’obtient en prenant le quotient du nombre de pull request fusionnées sur le nom de pull requests ouvertes, le tout multiplié par 100.   
+5. __Métrique 5 : Taux de succès des pull requests (pourcentage de pull requests qui sont fusionnées par rapport au nombre total de pull requests ouvertes).__  
+Cette métrique a été choisie pour montrer le taux de réussite des demandes de fusion. Elle s’obtient en prenant le quotient du nombre de pull request fusionnées sur le nom de pull requests ouvertes, le tout multiplié par 100. Ce taux est similaire au %C/A (pourcentage complet et exact) qui représente la qualité du travail.
+<br>
 
 Les routes associées à ces métriques sont :  
 1. __https://localhost:3000/pullrequest/metrique1__ 
@@ -64,6 +67,7 @@ Les routes associées à ces métriques sont :
 4. __https://localhost:3000/pullrequest/metrique4__
 5. __https://localhost:3000/pullrequest/metrique5__  
 
+<br>
 <br>
 
 ### Métrique de Visualisation
