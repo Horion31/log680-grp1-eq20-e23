@@ -11,7 +11,7 @@ Il sera alors possible d'exécuter le fichier __app.js__ dans le dossier *log680
 
 Les réponses pour les différentes URL entrées seront affichées sous le format html sur la page, par soucis de facilité de lecture. Le framework Expressjs a été utilisé.
 
-                                                                                                                                                                                                                                                                
+<br>                                              
 
 ### Métriques Kanban
 
@@ -37,7 +37,7 @@ Les routes associées à ces métriques sont :
 3. __https://localhost:3000/kanban/metrique3/:NomColonne__ : remplacer *nomColonne*.
 4. __https://localhost:3000/kanban/metrique4/:dateDebut/:dateFin__ : remplacer *nomColonne*.  
 
-                                                                                                                                                                                                                                                                
+<br>                                              
 
 ### Métriques pull requests
 
