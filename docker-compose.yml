@@ -1,13 +1,12 @@
 version: "3.7"
 services:
-  db_postgres:
-    container_name: postgres
+  db_postgres2:
+    container_name: postgres2
     image: postgres:latest
     restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=db_postgres
     logging:
       options:
         max-size: 10m
@@ -21,8 +20,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  pgadmin:
-    container_name: pgadmin
+  pgadmin2:
+    container_name: pgadmin2
     image: dpage/pgadmin4:latest
     restart: always
     environment:
@@ -31,4 +30,4 @@ services:
     ports:
       - "5050:80"
     volumes:
-      - ./data/pgadmin-data:/var/lib/pgadmin
+      - ./data/pgadmin-data:/var/lib/pgadmin:Z  

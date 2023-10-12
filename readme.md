@@ -73,3 +73,7 @@ Les routes associées à ces métriques sont :
 ### Métrique de Visualisation
 
 Cette métrique affiche les différentes tâches présentent dans chaque colonne (aini que leur nombre) à l'instant actuel. La route associée est : __https://localhost:3000/snapshot__
+
+### Base de données 
+
+La base de données peut être démarrée à partir de docker comme un service. Une base de données locale sera donc accessible. Cependant, le programme n'a pas encore de connexion. 

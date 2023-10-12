@@ -22,6 +22,21 @@ const root = {
     },
 };
 
+const {Client} = require('pg')
+
+const client = new Client({
+    user: 'postgres',
+    password: 'postgres',
+    host: "postgres",
+    port: 5432,
+    database: "postgres"
+})
+
+client.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
 app.use(bodyParser.json());
 
 app.use('/graphql', graphqlHTTP({
