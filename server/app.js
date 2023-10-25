@@ -4,17 +4,33 @@ const axios = require('axios');
 const { graphqlHTTP } = require('express-graphql');
 const bodyParser = require('body-parser');
 const { graphql, buildSchema } = require('graphql');
+const { graphqlImport } = require('graphql-import-node/register');
+const { importSchema } = require('graphql-import');
+const { makeExecutableSchema } = require('@graphql-tools/schema')
+const expressGraphQl = require("express-graphql");
 
 require('dotenv').config({ path: '../.env' })
 
 const app = express()
 const port = 3000
 
-const schema = buildSchema(`
-    type Query {
-        hello: String
-    }
-`);
+
+const db_util = require('./db_app')
+
+db_util.CreateDatabaseIfNotExist()
+
+// const resolvers = {}
+
+// const schema = makeExecutableSchema({
+//   typeDefs: typeDef,
+//   resolvers: {},
+// })
+
+const { query } = require("./schemas/queries");
+
+const schema = new GraphQLSchema({
+  query
+});
 
 const root = {
   hello: () => {
@@ -22,26 +38,12 @@ const root = {
   },
 };
 
-const { Client } = require('pg')
 
-const client = new Client({
-  user: 'postgres',
-  password: 'postgres',
-  host: "localhost",
-  port: 5432,
-  database: "postgres"
-})
-
-client.connect(function (err) {
-  if (err) throw err;
-  console.log("Connected!");
-});
 
 app.use(bodyParser.json());
 
 app.use('/graphql', graphqlHTTP({
   schema,
-  rootValue: root,
   graphiql: true
 }));
 
@@ -57,7 +59,7 @@ const baseUrl = "https://api.github.com/graphql";
 
 const headers = {
   "Content-Type": "application/json",
-  authorization: "bearer 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" //CHANGER TOKEN
+  authorization: `bearer ${process.env.GITHUB_TOKEN}`
 };
 
 //requete metriques
