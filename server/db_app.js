@@ -1,4 +1,4 @@
-const { Pool } = require('pg')
+const { Client } = require('pg')
 const { graphqlImport } = require('graphql-import-node/register');
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 const typeDef = require('./schemas/schema.docs.graphql');
@@ -12,43 +12,49 @@ const schema = makeExecutableSchema({
     resolvers: {},
 })
 
-const pool = new Pool({
+const client = new Client({
     user: 'postgres',
     password: 'postgres',
     host: "localhost",
     port: 5432,
 });
-
-
-const client = pool.connect()
-
+client.connect()
 
 async function CreateDatabaseIfNotExist() {
-
-    const result = await pool.query(`select exists( SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('${process.env.DB_NAME}'))`)
-
-    if (!result.rows[0].exists) {
-        console.log("create database")
-        pool.query(`CREATE DATABASE ${process.env.DB_NAME};`)
+    try {
+        const result = await client.query(`select exists( SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('${process.env.DB_NAME}'))`)
+        if (!result.rows[0].exists) {
+            console.log("create database")
+            pool.query(`CREATE DATABASE ${process.env.DB_NAME};`)
+        }
+        else {
+            console.log("Using already existing database")
+        }
+    } catch (e) {
+        throw e
     }
-    else {
-        console.log("Using already existing database")
-    }
-    await pool.end()
+
 }
 
+
 async function CreateTables() {
+    // console.log("Create table if dont exist")
+    // try {
+    //     const resultTask = await client.query(`CREATE Table if not exists Task (
+    //         task_id serial PRIMARY KEY,
+    //         name VARCHAR (100),
+    //         state VARCHAR (10),
+    //         lead_time TIMESTAMP,
+    //         createdAt TIMESTAMP,
+    //         updatedAt TIMESTAMP)`);
 
-    const result = await pool.query(`select exists( SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('${process.env.DB_NAME}'))`)
+    //     const resultProject = await client.query(`CREATE Table if not exists Project (
+    // 	    project_id serial PRIMARY KEY,
+    //         created TIMESTAMP)`);
 
-    if (!result.rows[0].exists) {
-        console.log("create database")
-        pool.query(`CREATE DATABASE ${process.env.DB_NAME};`)
-    }
-    else {
-        console.log("Using already existing database")
-    }
-    await pool.end()
+    // } catch (e) {
+    //     throw e
+    // }
 }
 
 module.exports = {

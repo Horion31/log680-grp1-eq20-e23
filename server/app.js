@@ -1,3 +1,4 @@
+// #region import 
 const express = require('express')
 const cron = require('node-cron');
 const axios = require('axios');
@@ -8,6 +9,9 @@ const { graphqlImport } = require('graphql-import-node/register');
 const { importSchema } = require('graphql-import');
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 const expressGraphQl = require("express-graphql");
+const db_util = require('./db_sequalize')
+
+// #endregion
 
 require('dotenv').config({ path: '../.env' })
 
@@ -15,30 +19,13 @@ const app = express()
 const port = 3000
 
 
-const db_util = require('./db_app')
+db_util.syncDataBase();
 
-db_util.CreateDatabaseIfNotExist()
-
-// const resolvers = {}
-
-// const schema = makeExecutableSchema({
-//   typeDefs: typeDef,
-//   resolvers: {},
-// })
-
-const { query } = require("./schemas/queries");
-
+// const { query } = require("./schemas/queries");
+const { GraphQLSchema } = require("graphql");
 const schema = new GraphQLSchema({
-  query
+  // query
 });
-
-const root = {
-  hello: () => {
-    return 'Hello world!';
-  },
-};
-
-
 
 app.use(bodyParser.json());
 
@@ -75,6 +62,7 @@ const query1 = {
                   text
                     }                            
                 ... on ProjectV2ItemFieldSingleSelectValue {
+                  id
                   name
                   createdAt
                   updatedAt
@@ -136,6 +124,9 @@ repository(owner: "Horion31", name: "log680-grp1-eq20-e23") {
 
 //Metrique 1 : Lead Time pour une tâche donnée
 app.get('/kanban/metrique1/:nomTache', async (req, res) => {
+  let task_id;
+  let createdAt;
+  let updatedAt;
   try {
     const nomTache = req.params.nomTache;
     const response = await fetch(baseUrl, {
@@ -150,6 +141,11 @@ app.get('/kanban/metrique1/:nomTache', async (req, res) => {
     while (i < data.data.node.items.nodes.length) {
       const node = data.data.node.items.nodes[i];
       if (node.fieldValues.nodes[3].text === nomTache) {
+
+        task_id = node.fieldValues.nodes[4].id
+        createdAt = node.fieldValues.nodes[4].createdAt
+        updatedAt = node.fieldValues.nodes[4].updatedAt
+
         if (node.fieldValues.nodes[4].name === "Terminé") {
           const createdAt = new Date(node.fieldValues.nodes[4].createdAt);
           const updatedAt = new Date(node.fieldValues.nodes[4].updatedAt);
@@ -166,11 +162,11 @@ app.get('/kanban/metrique1/:nomTache', async (req, res) => {
           differenceInDays = Math.round(differenceInSeconds / (60 * 60 * 24));
           break
         }
-
       }
 
       i++;
     }
+    db_util.syncTask1(task_id, nomTache, differenceInSeconds.toString(), createdAt, updatedAt)
 
     //console.log(`Le leadtime pour la tache donnée "${nomTache}" est de ${differenceInSeconds} secondes, soit ${differenceInDays} jours.`);
     //res.json(data);
@@ -182,15 +178,21 @@ app.get('/kanban/metrique1/:nomTache', async (req, res) => {
 
     const pageHtml = `
       <html>
+      
         <head>
           <title>Métrique 1 - Projet Kaban :  Lead Time pour une tâche donnée</title>
         </head>
         <body>
           <h1>Métrique 1 - Projet Kaban :  Lead Time pour une tâche donnée</h1>
           ${logHtml}
+          <pre id="data">
+            ${JSON.stringify(data.data.node.items.nodes, undefined, 2)}
+          </pre>
+
         </body>
       </html>
 `;
+
     res.send(pageHtml);
 
   } catch (error) {
