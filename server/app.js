@@ -10,7 +10,7 @@ const { importSchema } = require('graphql-import');
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 const expressGraphQl = require("express-graphql");
 const db_util = require('./db_sequalize')
-
+const { readFileSync } = require('fs')
 // #endregion
 
 require('dotenv').config({ path: '../.env' })
@@ -24,13 +24,18 @@ db_util.syncDataBase();
 // const { query } = require("./schemas/queries");
 const { GraphQLSchema } = require("graphql");
 const schema = new GraphQLSchema({
-  // query
 });
+
+const typeDefs = readFileSync("./schemas/schema.docs.graphql", { encoding: 'utf-8' });
+
+const executableSchema = makeExecutableSchema({
+  typeDefs
+})
 
 app.use(bodyParser.json());
 
 app.use('/graphql', graphqlHTTP({
-  schema,
+  schema: executableSchema,
   graphiql: true
 }));
 
@@ -98,6 +103,7 @@ repository(owner: "Horion31", name: "log680-grp1-eq20-e23") {
   pullRequests(first: 5) {
     totalCount
     nodes {
+      id
       number
       title
       createdAt
@@ -166,10 +172,7 @@ app.get('/kanban/metrique1/:nomTache', async (req, res) => {
 
       i++;
     }
-    db_util.syncTask1(task_id, nomTache, differenceInSeconds.toString(), createdAt, updatedAt)
-
-    //console.log(`Le leadtime pour la tache donnée "${nomTache}" est de ${differenceInSeconds} secondes, soit ${differenceInDays} jours.`);
-    //res.json(data);
+    db_util.syncTaskLeadTime(task_id, nomTache, differenceInSeconds.toString(), createdAt, updatedAt)
 
     logMessages.pop();
     logMessages.push(`Le leadtime pour la tache donnée "${nomTache}" est de ${differenceInSeconds} secondes, soit ${differenceInDays} jours.`);
@@ -185,13 +188,10 @@ app.get('/kanban/metrique1/:nomTache', async (req, res) => {
         <body>
           <h1>Métrique 1 - Projet Kaban :  Lead Time pour une tâche donnée</h1>
           ${logHtml}
-          <pre id="data">
-            ${JSON.stringify(data.data.node.items.nodes, undefined, 2)}
-          </pre>
-
         </body>
       </html>
 `;
+
 
     res.send(pageHtml);
 
@@ -215,13 +215,12 @@ app.get('/kanban/metrique2/:dateDebut/:dateFin', async (req, res) => {
 
     const data = await response.json();
 
-    //console.log(`Pour la periode de ${dateDebut} à ${dateFin} \n`);
     logMessages.pop();
-    //logMessages.push(`Pour la periode de ${dateDebut} à ${dateFin} : \n\n`);
-
 
     let i = 0;
     while (i < data.data.node.items.nodes.length) {
+      let task_id;
+      let task_name;
       const node = data.data.node.items.nodes[i];
       const dateCompletion = new Date(node.fieldValues.nodes[4].updatedAt);
       if ((node.fieldValues.nodes[4].name === "Terminé") && (dateDebut <= dateCompletion) && (dateFin >= dateCompletion)) {
@@ -231,9 +230,11 @@ app.get('/kanban/metrique2/:dateDebut/:dateFin', async (req, res) => {
         differenceInSeconds = differenceInMilliseconds / 1000;
         differenceInDays = Math.round(differenceInSeconds / (60 * 60 * 24));
         logMessages.push(`Le Lead time pour la tache ${node.fieldValues.nodes[3].text} : ${differenceInSeconds} secondes, soit ${differenceInDays} jours`);
-        //logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
-        //console.log(`Le Lead time pour la tache ${node.fieldValues.nodes[3].text} : ${differenceInSeconds} secondes, soit ${differenceInDays} jours`);
 
+        task_id = node.fieldValues.nodes[4].id
+        task_name = node.fieldValues.nodes[3].text
+
+        db_util.syncTaskRaw(task_id, task_name, differenceInSeconds, differenceInDays, createdAt, updatedAt, "Terminé")
       }
       i++;
     }
@@ -270,6 +271,8 @@ app.get('/kanban/metrique2/:dateDebut/:dateFin', async (req, res) => {
 //Métrique 3 : Nombre de tâches actives pour une colonne donnée
 app.get('/kanban/metrique3/:NomColonne', async (req, res) => {
   try {
+    let task_id;
+    let task_name;
     const NomColonne = req.params.NomColonne;
     const response = await fetch(baseUrl, {
       method: 'POST',
@@ -284,6 +287,9 @@ app.get('/kanban/metrique3/:NomColonne', async (req, res) => {
       const node = data.data.node.items.nodes[i];
       if (node.fieldValues.nodes[4].name === NomColonne) {
         compteurTachesColonne++;
+        task_id = node.fieldValues.nodes[4].id
+        task_name = node.fieldValues.nodes[3].text
+        db_util.syncTaskWithState(task_id, task_name, NomColonne)
       }
       i++;
     }
@@ -303,9 +309,6 @@ app.get('/kanban/metrique3/:NomColonne', async (req, res) => {
           ${logHtml}
         </body>
       </html>
-
-
-
     `;
     res.send(pageHtml);
 
@@ -321,6 +324,8 @@ app.get('/kanban/metrique3/:NomColonne', async (req, res) => {
 //Métrique 4 : nombre de tâches complétées pour une période donnée
 app.get('/kanban/metrique4/:dateDebut/:dateFin', async (req, res) => {
   try {
+    let task_id;
+    let task_name;
     const dateDebut = new Date(req.params.dateDebut);
     const dateFin = new Date(req.params.dateFin);
     const response = await fetch(baseUrl, {
@@ -338,6 +343,9 @@ app.get('/kanban/metrique4/:dateDebut/:dateFin', async (req, res) => {
       const dateCompletion = new Date(node.fieldValues.nodes[4].updatedAt);
       if ((node.fieldValues.nodes[4].name === "Terminé") && (dateDebut <= dateCompletion) && (dateFin >= dateCompletion)) {
         compteurTachesFinies++;
+        task_id = node.fieldValues.nodes[4].id
+        task_name = node.fieldValues.nodes[3].text
+        db_util.syncTaskWithState(task_id, task_name, "Terminé")
       }
       i++;
     }
@@ -390,7 +398,7 @@ app.get('/pullrequest/metrique1', async (req, res) => {
       logMessages.pop();
       logMessages.push(`Le temps entre le lancement de la pull-request appelée "${pullRequest.title}"  et sa dernière update est de ${timeDiff} secondes.`);
 
-      //console.log(`La pull-request appelée "${pullRequest.title}" a été révisée la première fois au bout de ${timeDiff} secondes.`);
+      db_util.syncPullRequest1(pullRequest.id, pullRequest.title, createdAt, updatedAt, timeDiff);
 
       i++;
     }
@@ -438,21 +446,20 @@ app.get('/pullrequest/metrique2', async (req, res) => {
 
         logMessages.pop();
         logMessages.push(`Le temps de fusion pour la pull request appelée "${pullRequest.title}" est : ${timeDiff} secondes`);
-
-        //console.log(`Le temps de fusion pour la pull request appelée "${pullRequest.title}" est : ${timeDiff} secondes `);
+        db_util.syncPullRequest2(pullRequest.id, pullRequest.title, createdAt, closedAt, timeDiff);
       }
       else {
         const timeDiff2 = (closedAt - createdAt) / 1000;
         logMessages.pop();
         logMessages.push(`Le temps de fusion pour la pull request appelée "${pullRequest.title}" est : ${timeDiff2} secondes`);
-        //console.log(`le temps de fusion pour la pull request appelée "${pullRequest.title}" est : ${timeDiff2} secondes `);
-      }
 
+        db_util.syncPullRequest2(pullRequest.id, pullRequest.title, createdAt, closedAt, timeDiff2);
+      }
       i++;
     }
 
     const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
-    //res.json(data);
+
     const pageHtml = `
       <html>
         <head>
@@ -496,7 +503,7 @@ app.get('/pullrequest/metrique3', async (req, res) => {
       }
       i++;
     }
-    //console.log(`Le nombre de pull request actives pour la periode de ${dateDebut} à ${dateFin} est : ${compteurPR}`);
+
     logMessages.pop();
     logMessages.push(`Le nombre de pull request actives pour la periode de ${dateDebut} à ${dateFin} est : ${compteurPR}`);
     const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
