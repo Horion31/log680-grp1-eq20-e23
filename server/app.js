@@ -630,7 +630,6 @@ app.get('/pullrequest/metrique5', async (req, res) => {
 });
 
 
-
 //metrique visualisation
 app.get('/snapshot', async (req, res) => {
   try {
@@ -680,43 +679,47 @@ app.get('/snapshot', async (req, res) => {
 
     while (i < data.data.node.items.nodes.length) {
       const node = data.data.node.items.nodes[i];
-      if (node.fieldValues.nodes[4].name === "Backlog") {
-        kanbanData.columns[0].tasks.push(node.fieldValues.nodes[3].text);
-      }
-      else if (node.fieldValues.nodes[4].name === "A faire") {
-        kanbanData.columns[1].tasks.push(node.fieldValues.nodes[3].text);
-      }
+      const taskName = node.fieldValues.nodes[3].text
+      const taskState = node.fieldValues.nodes[4].name
+      const task_id = node.fieldValues.nodes[4].id
 
-      else if (node.fieldValues.nodes[4].name === "En cours") {
-        kanbanData.columns[2].tasks.push(node.fieldValues.nodes[3].text);
-      }
+      if (task_id != undefined && taskName != undefined) {
 
-      else if (node.fieldValues.nodes[4].name === "Revue") {
-        kanbanData.columns[3].tasks.push(node.fieldValues.nodes[3].text);
-      }
+        if (taskState === "Backlog") {
+          kanbanData.columns[0].tasks.push(taskName);
+        }
+        else if (taskState === "A faire") {
+          kanbanData.columns[1].tasks.push(taskName);
+        }
 
-      else if (node.fieldValues.nodes[4].name === "Bloqué") {
-        kanbanData.columns[4].tasks.push(node.fieldValues.nodes[3].text);
-      }
+        else if (taskState === "En cours") {
+          kanbanData.columns[2].tasks.push(taskName);
+        }
 
-      else if (node.fieldValues.nodes[4].name === "Terminé") {
-        kanbanData.columns[5].tasks.push(node.fieldValues.nodes[3].text);
-      }
+        else if (taskState === "Revue") {
+          kanbanData.columns[3].tasks.push(taskName);
+        }
 
+        else if (taskState === "Bloqué") {
+          kanbanData.columns[4].tasks.push(taskName);
+        }
+
+        else if (taskState === "Terminé") {
+          kanbanData.columns[5].tasks.push(taskName);
+        }
+        db_util.syncTaskWithState(task_id, taskName, taskState)
+      }
       i++;
     }
     const kanbanHtml = generateKanbanHtml(kanbanData);
 
     res.send(kanbanHtml);
 
-    //res.json(data);
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
   }
 });
-
 
 
 function generateKanbanHtml(kanbanData) {

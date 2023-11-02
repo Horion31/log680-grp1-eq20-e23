@@ -56,7 +56,8 @@ PullRequest.init({
     createdTime: DataTypes.DATE,
     updatedTime: DataTypes.DATE,
     reaction_time: DataTypes.DOUBLE,
-    fusion_time: DataTypes.DOUBLE
+    fusion_time: DataTypes.DOUBLE,
+    state: DataTypes.ENUM('OPEN', 'CLOSED', 'MERGED')
 }, {
     sequelize, // We need to pass the connection instance
     modelName: 'Pull Request' // We need to choose the model name
@@ -118,6 +119,7 @@ async function syncTaskWithState(taskId, taskName, taskState) {
     await syncedTask.update({
         state: taskState
     })
+
 }
 
 async function syncPullRequest1(pullRequestId, pullRequestTitle, pullRequestCreatedTime, pullRequestUpdatedTime, pullRequestReactionTimeSec) {
