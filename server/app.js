@@ -55,9 +55,11 @@ const headers = {
 };
 
 //requete metriques
-const query1 = {
+//nodeID LAB1 : PVT_kwHOAWcErM4AVdZf
+const query1 = (nodeID) => {
+  return {
   query: ` query {
-    node(id: "PVT_kwHOAWcErM4AVdZf") {
+    node(id: "${nodeID}") {
       ... on ProjectV2 {
         items(first: 20) {
           nodes{
@@ -80,6 +82,7 @@ const query1 = {
     }
   }
   `,
+  };
 };
 
 const queryPullRequest = {
@@ -125,20 +128,46 @@ repository(owner: "Horion31", name: "log680-grp1-eq20-e23") {
   `,
 };
 
+//Requête CI
+//ID noeaud pour le workflow CI CD pour le lab2 : W_kwDOKf4pOM4Eea0K
+const queryCI = (nodeID_CI) => {
+  return {
+  query: ` query {
+    node(id: "${nodeID_CI}") {
+      ... on Workflow {
+        runs(first: 100) {
+          nodes {
+            runNumber
+            createdAt
+            updatedAt
+            checkSuite {
+              status
+              conclusion
+            }
+          }
+        }
+      }
+    }
+  }
+
+  `,
+}; 
+};
 
 //routes
 
 //Metrique 1 : Lead Time pour une tâche donnée
-app.get('/kanban/metrique1/:nomTache', async (req, res) => {
+app.get('/kanban/metrique1/:nodeID/:nomTache', async (req, res) => {
   let task_id;
   let createdAt;
   let updatedAt;
   try {
     const nomTache = req.params.nomTache;
+    const nodeID = req.params.nodeID; //ID du noeuds (projet)
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify(query1)
+      body: JSON.stringify(query1(nodeID))
     });
 
     const data = await response.json();
@@ -207,10 +236,11 @@ app.get('/kanban/metrique2/:dateDebut/:dateFin', async (req, res) => {
   try {
     const dateDebut = new Date(req.params.dateDebut);
     const dateFin = new Date(req.params.dateFin);
+    const nodeID = req.params.nodeID; //ID du noeuds (projet)
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify(query1),
+      body: JSON.stringify(query1(nodeID)),
     });
 
     const data = await response.json();
@@ -274,10 +304,11 @@ app.get('/kanban/metrique3/:NomColonne', async (req, res) => {
     let task_id;
     let task_name;
     const NomColonne = req.params.NomColonne;
+    const nodeID = req.params.nodeID; //ID du noeuds (projet)
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify(query1),
+      body: JSON.stringify(query1(nodeID)),
     });
 
     let compteurTachesColonne = 0;
@@ -328,10 +359,11 @@ app.get('/kanban/metrique4/:dateDebut/:dateFin', async (req, res) => {
     let task_name;
     const dateDebut = new Date(req.params.dateDebut);
     const dateFin = new Date(req.params.dateFin);
+    const nodeID = req.params.nodeID; //ID du noeuds (projet)
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify(query1),
+      body: JSON.stringify(query1(nodeID)),
     });
 
     const data = await response.json();
@@ -380,7 +412,7 @@ app.get('/kanban/metrique4/:dateDebut/:dateFin', async (req, res) => {
 //metrique1 : temps de réaction après le lancement de la pull request
 app.get('/pullrequest/metrique1', async (req, res) => {
   try {
-    const response = await fetch(baseUrl, {
+      const response = await fetch(baseUrl, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(queryPullRequest),
@@ -631,12 +663,13 @@ app.get('/pullrequest/metrique5', async (req, res) => {
 
 
 //metrique visualisation
-app.get('/snapshot', async (req, res) => {
+app.get('/snapshot/:nodeID', async (req, res) => {
   try {
+     const nodeID = req.params.nodeID; //ID du noeuds (projet)     
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify(query1),
+      body: JSON.stringify(query1(nodeID)),
 
     });
 
@@ -719,6 +752,218 @@ app.get('/snapshot', async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
   }
+});
+
+//Metriques CI
+//Metrique 1 CI : temps d'exécution du pipeline de build pour un build donné
+app.get('/ci/metrique1/:nodeID_CI/:numBuild', async (req, res) => {
+  try {
+        const numBuild = parseInt(req.params.numBuild, 10);     
+        const nodeID_CI = req.params.nodeID_CI; //ID du noeuds (projet)     
+        const response = await fetch(baseUrl, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(queryCI(nodeID_CI))
+      });
+
+      const data = await response.json();
+
+      let i = 0;
+      while (i < data.data.node.runs.nodes.length) {
+        const node = data.data.node.runs.nodes[i];
+        if (node.runNumber === numBuild) {
+          const createdAt = new Date(node.createdAt);
+          const updatedAt = new Date(node.updatedAt);
+          const differenceInMilliseconds = updatedAt - createdAt;
+          differenceInSeconds = differenceInMilliseconds / 1000;
+          differenceInDays = Math.round(differenceInSeconds / (60*60*24));
+          break       
+
+        }
+      
+      i++;
+      }
+
+  //console.log(`Le temps d'exécution du pipeline de build pour le build de numéro : "${numBuild}" est de ${differenceInSeconds} secondes, soit ${differenceInDays} jours.`);
+
+  logMessages.pop();
+  logMessages.push(`Le temps d'exécution du pipeline de build pour le build de numéro : "${numBuild}" est de ${differenceInSeconds} secondes, soit ${differenceInDays} jours.`);
+
+  const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+  
+  const pageHtml = `
+    <html>
+      <head>
+        <title>Métrique 1 - CI CD :  Temps d'exécution pour un build donné (pour les 100 derniers builds)</title>
+      </head>
+      <body>
+        <h1>Métrique 1 - CI CD : Temps d'exécution pour un build donné</h1>
+        ${logHtml}
+      </body>
+    </html>
+`;
+res.send(pageHtml);
+
+//res.json(data);
+
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
+  }
+
+});
+
+
+//Metrique 2 CI : quantité de builds
+app.get('/ci/metrique2/:nodeID_CI', async (req, res) => {
+  try {   
+        const nodeID_CI = req.params.nodeID_CI; //ID du noeuds (projet)     
+        const response = await fetch(baseUrl, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(queryCI(nodeID_CI))
+      });
+
+      const data = await response.json();
+          
+
+  logMessages.pop();
+  logMessages.push(`La quantité de builds pour le workflow CI CD est : "${data.data.node.runs.nodes.length}". `);
+
+  const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+  
+  const pageHtml = `
+    <html>
+      <head>
+        <title>Métrique 2 - CI CD : Quantité de builds</title>
+      </head>
+      <body>
+        <h1>Métrique 2 - CI CD : Quantité de builds</h1>
+        ${logHtml}
+      </body>
+    </html>
+`;
+res.send(pageHtml);
+
+//res.json(data);
+
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
+  }
+
+});
+
+
+//Metrique 3 CI : temps moyen pour l’ensemble des builds pour une période donnée
+app.get('/ci/metrique3/:nodeID_CI/:dateDebut/:dateFin', async (req, res) => {
+  try {   
+        const dateDebut = new Date(req.params.dateDebut);
+        const dateFin = new Date(req.params.dateFin);  
+        const nodeID_CI = req.params.nodeID_CI; //ID du noeuds (projet)     
+        const response = await fetch(baseUrl, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(queryCI(nodeID_CI))
+      });
+
+      const data = await response.json();
+      let TempsTotalMillisecondes = 0;
+      let TempsMoyenMillisecondes = 0;
+      let TempsMoyenSecondes = 0;
+      let i = 0;
+      while (i < data.data.node.runs.nodes.length) {
+        const node = data.data.node.runs.nodes[i];
+        const createdAt = new Date(node.createdAt);
+        const updatedAt = new Date(node.updatedAt);
+        TempsTotalMillisecondes += updatedAt - createdAt;
+        i++;
+      }
+      TempsMoyenMillisecondes = TempsTotalMillisecondes / (data.data.node.runs.nodes.length);
+      TempsMoyenSecondes = TempsMoyenMillisecondes / 1000;
+    
+  logMessages.pop();
+  logMessages.push(`Le Temps moyen pour l’ensemble des builds pour la période donnée : ${TempsMoyenSecondes} secondes. `);
+
+  const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+  
+  const pageHtml = `
+    <html>
+      <head>
+        <title>Métrique 3 - CI CD : Temps moyen pour l’ensemble des builds pour une période donnée</title>
+      </head>
+      <body>
+        <h1>Métrique 3 - CI CD : Temps moyen pour l’ensemble des builds pour une période donnée</h1>
+        ${logHtml}
+      </body>
+    </html>
+`;
+res.send(pageHtml);
+
+//res.json(data);
+
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
+  }
+
+});
+
+
+//Metrique 4 CI : Taux de builds réussis sur les builds échoués
+app.get('/ci/metrique4/:nodeID_CI', async (req, res) => {
+  try {    
+        const nodeID_CI = req.params.nodeID_CI; //ID du noeuds (projet)     
+        const response = await fetch(baseUrl, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(queryCI(nodeID_CI))
+      });
+
+      const data = await response.json();
+      let compteurSuccess = 0;
+      let compteurFailure = 0;
+      let i = 0;
+      while (i < data.data.node.runs.nodes.length) {
+        const node = data.data.node.runs.nodes[i];
+        if (node.checkSuite.status === "COMPLETED" && node.checkSuite.conclusion === "SUCCESS"){
+          compteurSuccess++;
+        }
+
+        else if (node.checkSuite.status === "COMPLETED" && node.checkSuite.conclusion === "FAILURE"){
+          compteurFailure++;
+        }
+        
+        i++;
+      }
+
+      const taux = (compteurSuccess / compteurFailure);
+    
+  logMessages.pop();
+  logMessages.push(`Le Taux de builds réussis sur les builds échoués est de : ${taux}. `);
+
+  const logHtml = `<ul>${logMessages.map(message => `<li>${message}</li>`).join('')}</ul>`;
+  
+  const pageHtml = `
+    <html>
+      <head>
+        <title>Métrique 4 - CI CD : Taux de builds réussis sur les builds échoués</title>
+      </head>
+      <body>
+        <h1>Métrique 4 - CI CD : Taux de builds réussis sur les builds échoués</h1>
+        ${logHtml}
+      </body>
+    </html>
+`;
+res.send(pageHtml);
+
+//res.json(data);
+
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Une erreur s\'est produite lors de la récupération des données du tableau Kanban.' });
+  }
+
 });
 
 
