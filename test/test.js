@@ -6,8 +6,8 @@ const app = require('../server/app.js');
 
 chai.use(chaiHttp);
 const expect = chai.expect;
-console.log(`Fr`);
-/*describe('App', () => {
+
+describe('App', () => {
   it('should respond with a welcome message at the root URL', (done) => {
     chai.request(app)
       .get('/')
@@ -17,4 +17,13 @@ console.log(`Fr`);
         done();
       });
   });
-});*/
+  it('should return a 404 status code for undefined routes', (done) => {
+    chai.request(app)
+      .get('/undefinedroute')
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done();
+      });
+  });
+
+});
