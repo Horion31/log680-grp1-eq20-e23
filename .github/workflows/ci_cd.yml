@@ -36,7 +36,7 @@ jobs:
     - name: Formatting
       run: |
         npm install prettier
-        npx prettier --check "server/*.js"
+        npx prettier --check "server/*.js" --write "server/app.js" "server/db_app.js" "server/db_sequalize.js" "server/index.js"
 
     - name: Prevent push on failure
       if: failure()
