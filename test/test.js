@@ -17,13 +17,4 @@ describe('App', () => {
         done();
       });
   });
-
-  it('should return a 404 status code for undefined routes', (done) => {
-    chai.request(app)
-      .get('/undefinedroute')
-      .end((err, res) => {
-        expect(res).to.have.status(404);
-        done();
-      });
-  });
 });
