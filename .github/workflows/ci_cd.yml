@@ -27,7 +27,6 @@ jobs:
 
     - name: Run unit tests
       run: |
-        npm install mocha --save-dev
         npm test
     - name: Code static analysis
       run: |
