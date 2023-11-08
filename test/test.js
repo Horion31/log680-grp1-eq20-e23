@@ -2,7 +2,7 @@ const express = require('express');
 const mocha = require('mocha');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../server/app'); // Assurez-vous d'importer correctement votre application
+const app = require('../server/app');
 
 chai.use(chaiHttp);
 const expect = chai.expect;
