@@ -25,6 +25,8 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.33.0",
     "sqlite3": "^5.1.6"
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0"
   },
   "name": "log680-grp1-eq20-e23",
   "description": "",
