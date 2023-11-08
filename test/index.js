@@ -1,6 +1,6 @@
 // index.js
-const module1 = require('./test_main');
+const module1 = require('./test');
 
 module.exports = {
-  test_main
+  test
 };
