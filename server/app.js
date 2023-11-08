@@ -17,6 +17,7 @@ require('dotenv').config()
 
 const app = express()
 const port = 3000
+module.exports = app;
 
 db_util.syncDataBase();
 
