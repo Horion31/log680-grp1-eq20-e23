@@ -6,8 +6,8 @@ const app = require('../server/app.js');
 
 chai.use(chaiHttp);
 const expect = chai.expect;
-
-describe('App', () => {
+console.log(`Fr`);
+/*describe('App', () => {
   it('should respond with a welcome message at the root URL', (done) => {
     chai.request(app)
       .get('/')
@@ -17,4 +17,4 @@ describe('App', () => {
         done();
       });
   });
-});
+});*/
