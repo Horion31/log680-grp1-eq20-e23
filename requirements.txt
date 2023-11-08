@@ -1,7 +1,0 @@
-express
-axios
-express-graphql
-body-parser
-graphql
-
-
