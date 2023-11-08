@@ -28,11 +28,13 @@ jobs:
     - name: Run unit tests
       run: |
         npm test
-    - name: Code static analysis and formatting
+    - name: Code static analysis
       run: |
         npm install eslint-config-google --save-dev 
         npx eslint . --no-error-on-unmatched-pattern
       continue-on-error: true
+    - name: Code static analysis
+      run: |
         npm install prettier
         npx prettier --check "src/**/*.js"
 
