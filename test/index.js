@@ -2,5 +2,5 @@
 const module1 = require('./test');
 
 module.exports = {
-  test
+  module1
 };
