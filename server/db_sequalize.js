@@ -39,7 +39,9 @@ Project.init({
         primaryKey: true
     },
     name: DataTypes.STRING,
-    createdTime: DataTypes.STRING
+    createdTime: DataTypes.STRING,
+    build_count: DataTypes.INTEGER,
+    average_build_time: DataTypes.DOUBLE
 }, {
     sequelize, // We need to pass the connection instance
     modelName: 'Project' // We need to choose the model name
@@ -57,10 +59,27 @@ PullRequest.init({
     updatedTime: DataTypes.DATE,
     reaction_time: DataTypes.DOUBLE,
     fusion_time: DataTypes.DOUBLE,
-    state: DataTypes.ENUM('OPEN', 'CLOSED', 'MERGED')
+    state: DataTypes.STRING
 }, {
     sequelize, // We need to pass the connection instance
     modelName: 'Pull Request' // We need to choose the model name
+});
+
+class Build extends Model { }
+
+Build.init({
+    build_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true
+    },
+    project_id: DataTypes.STRING,
+    createdTime: DataTypes.DATE,
+    updatedTime: DataTypes.DATE,
+    execution_time: DataTypes.DOUBLE,
+    is_build_successful: DataTypes.BOOLEAN
+}, {
+    sequelize, // We need to pass the connection instance
+    modelName: 'Build' // We need to choose the model name
 });
 
 try {
@@ -152,4 +171,77 @@ async function syncPullRequest2(pullRequestId, pullRequestTitle, pullRequestCrea
     })
 }
 
-module.exports = { syncDataBase, syncTaskLeadTime, syncTaskRaw, syncTaskWithState, syncPullRequest1, syncPullRequest2 }
+async function syncProject(projectId, projectName, projectCreatedTime, projectBuildCount, projectAverageBuildTime) {
+
+    const [syncedProject] = await Project.findOrCreate(
+        {
+            where: { project_id: projectId },
+        });
+
+    await syncedProject.update({
+        name: projectName,
+        createdTime: projectCreatedTime,
+        build_count: projectBuildCount,
+        average_build_time: projectAverageBuildTime
+    })
+}
+
+async function syncProjectBuildTime(projectId, projectAverageBuildTime) {
+
+    const [syncedProject] = await Project.findOrCreate(
+        {
+            where: { project_id: projectId },
+        });
+
+    await syncedProject.update({
+        average_build_time: projectAverageBuildTime
+    })
+}
+
+async function syncProjectBuildCount(projectId, projectBuildCount) {
+
+    const [syncedProject] = await Project.findOrCreate(
+        {
+            where: { project_id: projectId },
+        });
+
+    await syncedProject.update({
+        build_count: projectBuildCount
+    })
+}
+
+async function syncBuildState(buildId, buildProjectId, isBuildSucessfull) {
+
+    const [syncedBuild] = await Build.findOrCreate(
+        {
+            where: { build_id: buildId },
+        });
+
+    await syncedBuild.update({
+        project_id: buildProjectId,
+        is_build_successful: isBuildSucessfull
+    })
+}
+
+async function syncBuildTime(buildId, buildProjectId, buildCreatedTime, buildUpdatedTime, buildExecutionTime) {
+
+    const [syncedBuild] = await Build.findOrCreate(
+        {
+            where: { build_id: buildId },
+        });
+
+    await syncedBuild.update({
+        project_id: buildProjectId,
+        createdTime: buildCreatedTime,
+        updatedTime: buildUpdatedTime,
+        execution_time: buildExecutionTime
+    })
+}
+
+module.exports = {
+    syncDataBase,
+    syncTaskLeadTime, syncTaskRaw, syncTaskWithState,
+    syncProject, syncProjectBuildTime, syncProjectBuildCount,
+    syncPullRequest1, syncPullRequest2,
+    syncBuildTime, syncBuildState
+}
