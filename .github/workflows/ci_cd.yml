@@ -33,10 +33,10 @@ jobs:
         npm install eslint-config-google --save-dev 
         npx eslint . --no-error-on-unmatched-pattern
       continue-on-error: true
-    - name: Code static analysis
+    - name: Formatting
       run: |
         npm install prettier
-        npx prettier --check "src/**/*.js"
+        npx prettier --check "server/*.js"
 
     - name: Prevent push on failure
       if: failure()
