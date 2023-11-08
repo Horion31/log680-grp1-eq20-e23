@@ -30,7 +30,7 @@ jobs:
         npm test
     - name: Code static analysis and formatting
       run: |
-        npm install eslint-config-google --save-dev
+        npm install eslint-config-google --save-dev --no-error-on-unmatched-pattern
         npx eslint .
         npm install prettier
         npx prettier --check "src/**/*.js"
