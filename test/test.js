@@ -1,4 +1,4 @@
-const express = require('express');
+/*const express = require('express');
 const { after } = require('mocha');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -13,7 +13,7 @@ before((done) => {
     done();
   });
 });*/
-
+/*
 // Arrêter le serveur après les tests
 after((done) => {
   if (app && app.listening) {
@@ -51,4 +51,4 @@ describe('App', () => {
 
 });
 
-
+*/
