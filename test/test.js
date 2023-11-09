@@ -15,22 +15,18 @@ before((done) => {
 
 // Arrêter le serveur après les tests
 after((done) => {
-  // Intercepte le signal d'arrêt (SIGTERM)
-  process.on('SIGTERM', () => {
-    console.log('Signal d\'arrêt reçu. Arrêt du serveur...');
-    if (app && app.listening) {
-      app.close(() => {
-        console.log('Serveur de test arrêté');
+  if (app && app.listening) {
+    app.close(() => {
+      console.log('Serveur de test arrêté');
+      setTimeout(() => {
         done();
-      });
-    } else {
-      done();
-    }
-  });
-
-  // Émet un signal d'arrêt (SIGTERM)
-  process.emit('SIGTERM');
+      }, 1000); // Ajoute un délai d'attente de 1 seconde (ajuste si nécessaire)
+    });
+  } else {
+    done();
+  }
 });
+
 
 
 describe('App', () => {
