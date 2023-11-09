@@ -28,6 +28,8 @@ jobs:
     - name: Run unit tests
       run: |
         npm test
+    - name: Forcer la poursuite du pipeline
+      run: echo "Continuer"
     - name: Code static analysis
       run: |
         npm install eslint-config-google --save-dev 
