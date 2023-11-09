@@ -27,3 +27,14 @@ describe('App', () => {
 
 });
 
+after((done) => {
+  if (app && app.listening) {
+    app.close(() => {
+      console.log('Serveur de test arrêté');
+      done();
+    });
+  } else {
+    done();
+  }
+});
+
