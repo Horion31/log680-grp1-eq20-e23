@@ -1,5 +1,4 @@
-/*const express = require('express');
-const mocha = require('mocha');
+const express = require('express');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const app = require('../server/app.js');
@@ -27,4 +26,4 @@ describe('App', () => {
   });
 
 });
-*/
+
