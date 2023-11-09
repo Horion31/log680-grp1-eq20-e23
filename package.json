@@ -27,7 +27,7 @@
     "sqlite3": "^5.1.6",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
-    "mocha": "^10.2.0",
+    "mocha": "^10.2.0"
   },
   "name": "log680-grp1-eq20-e23",
   "description": "",
