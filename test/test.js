@@ -13,15 +13,23 @@ before((done) => {
   });
 });*/
 
+// Arrêter le serveur après les tests
 after((done) => {
-  app.close((err) => {
-    if (err) {
-      console.error('Erreur lors de l\'arrêt du serveur de test:', err);
+  // Intercepte le signal d'arrêt (SIGTERM)
+  process.on('SIGTERM', () => {
+    console.log('Signal d\'arrêt reçu. Arrêt du serveur...');
+    if (app && app.listening) {
+      app.close(() => {
+        console.log('Serveur de test arrêté');
+        done();
+      });
     } else {
-      console.log('Serveur de test arrêté');
+      done();
     }
-    done();
   });
+
+  // Émet un signal d'arrêt (SIGTERM)
+  process.emit('SIGTERM');
 });
 
 
