@@ -15,7 +15,7 @@ const schema = makeExecutableSchema({
 const client = new Client({
     user: 'postgres',
     password: 'postgres',
-    host: "localhost",
+    host: "host.docker.internal",
     port: 5432,
 });
 client.connect()
