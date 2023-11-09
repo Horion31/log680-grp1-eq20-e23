@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes, Model } = require('sequelize')
 
 const sequelize = new Sequelize({
-    host: 'localhost',
+    host: 'host.docker.internal',
     database: 'db_postgres',
     username: 'postgres',
     password: 'postgres',
