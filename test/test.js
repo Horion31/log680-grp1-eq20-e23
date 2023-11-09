@@ -6,6 +6,25 @@ const app = require('../server/app');
 chai.use(chaiHttp);
 const expect = chai.expect;
 
+before((done) => {
+  app.listen(3000, () => {
+    console.log('Serveur de test démarré sur le port 3000');
+    done();
+  });
+});
+
+after((done) => {
+  if (app && app.listening) {
+    app.close(() => {
+      console.log('Serveur de test arrêté');
+      done();
+    });
+  } else {
+    done();
+  }
+});
+
+
 describe('App', () => {
   it('should respond with a welcome message at the root URL', (done) => {
     chai.request(app)
@@ -27,14 +46,4 @@ describe('App', () => {
 
 });
 
-after((done) => {
-  if (app && app.listening) {
-    app.close(() => {
-      console.log('Serveur de test arrêté');
-      done();
-    });
-  } else {
-    done();
-  }
-});
 
