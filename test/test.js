@@ -14,14 +14,14 @@ before((done) => {
 });
 
 after((done) => {
-  if (app && app.listening) {
-    app.close(() => {
+  app.close((err) => {
+    if (err) {
+      console.error('Erreur lors de l\'arrêt du serveur de test:', err);
+    } else {
       console.log('Serveur de test arrêté');
-      done();
-    });
-  } else {
+    }
     done();
-  }
+  });
 });
 
 
