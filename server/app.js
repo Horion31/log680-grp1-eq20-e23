@@ -2,6 +2,7 @@
 const express = require('express')
 const cron = require('node-cron');
 const axios = require('axios');
+const fetch = require('node-fetch');
 const { graphqlHTTP } = require('express-graphql');
 const bodyParser = require('body-parser');
 const { graphql, buildSchema } = require('graphql');
