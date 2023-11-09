@@ -27,7 +27,7 @@ jobs:
 
     - name: Run unit tests
       run: |
-        node test/test.js
+        npm test/test.js
     - name: Code static analysis
       run: |
         npm install eslint-config-google --save-dev 
