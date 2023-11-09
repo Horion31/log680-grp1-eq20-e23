@@ -29,7 +29,7 @@ jobs:
 
     - name: Run unit tests
       run: |
-        npm run dev-test
+        npm test
         
     - name: Code static analysis
       run: |
