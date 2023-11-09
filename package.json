@@ -34,7 +34,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev-test": "nodemon --exec babel-node test/test.js",
+    "dev-test": "babel-node test/test.js",
     "test": "mocha test/test.js"
   },
   "repository": {
