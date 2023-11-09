@@ -63,4 +63,4 @@ jobs:
       uses: docker/build-push-action@v3   
       with:
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/oxygen-cs:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/metrics:latest
