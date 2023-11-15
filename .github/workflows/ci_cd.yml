@@ -3,7 +3,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - '22-pipeline'
+      - 'main'
   pull_request:
     types:
       - closed
