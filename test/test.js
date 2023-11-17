@@ -6,7 +6,7 @@ const app = require('../server/app');
 
 chai.use(chaiHttp);
 const expect = chai.expect;
-
+/*
 before((done) => {
   app.listen(3000, () => {
     console.log('Serveur de test démarré sur le port 3000');
@@ -26,7 +26,7 @@ after((done) => {
     done();
   }
 });
-
+*/
 
 
 describe('App', () => {
