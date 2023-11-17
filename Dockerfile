@@ -5,6 +5,7 @@ WORKDIR /app
 COPY . .
 
 RUN npm install
+RUN npx sequelize-cli db:create
 
 EXPOSE 3000
 
