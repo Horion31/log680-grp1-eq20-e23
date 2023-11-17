@@ -14,14 +14,13 @@ before((done) => {
   });
 });
 
-// Arrêter le serveur après les tests
 after((done) => {
   if (app && app.listening) {
     app.close(() => {
       console.log('Serveur de test arrêté');
       setTimeout(() => {
         done();
-      }, 1000); // Ajoute un délai d'attente de 1 seconde (ajuste si nécessaire)
+      }, 1000); 
     });
   } else {
     done();
