@@ -32,3 +32,18 @@ services:
       - "5050:80"
     volumes:
       - ./data/pgadmin-data:/var/lib/pgadmin:Z
+  Metriques:
+    container_name: conteneur_metriques
+    image: docker.io/library/conteneur_metriques:latest
+    restart: always
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      NODE_ENV: development
+    ports:
+      - "3000:80"
+  Oxygene:
+    container_name: conteneur_oxygene
+    image: elynefdc/oxygen-cs:latest
+    restart: always
+    ports:
+      - "5051:80"
