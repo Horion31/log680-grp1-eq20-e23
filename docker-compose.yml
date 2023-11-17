@@ -34,7 +34,7 @@ services:
       - ./data/pgadmin-data:/var/lib/pgadmin:Z
   Metriques:
     container_name: conteneur_metriques
-    image: docker.io/library/conteneur_metriques:latest
+    image: elynefdc/metrics:latest
     restart: always
     environment:
       GITHUB_TOKEN: ${GITHUB_TOKEN}

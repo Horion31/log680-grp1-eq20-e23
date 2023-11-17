@@ -90,6 +90,7 @@ try {
 }
 
 async function syncDataBase() {
+    console.log("Sync db?")
     await sequelize.sync();
 }
 
