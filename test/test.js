@@ -1,4 +1,4 @@
-/*const express = require('express');
+const express = require('express');
 const { after } = require('mocha');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -6,14 +6,14 @@ const app = require('../server/app');
 
 chai.use(chaiHttp);
 const expect = chai.expect;
-/*
+
 before((done) => {
   app.listen(3000, () => {
     console.log('Serveur de test démarré sur le port 3000');
     done();
   });
-});*/
-/*
+});
+
 // Arrêter le serveur après les tests
 after((done) => {
   if (app && app.listening) {
@@ -51,4 +51,4 @@ describe('App', () => {
 
 });
 
-*/
+
