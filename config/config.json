@@ -3,7 +3,7 @@
     "username": "postgres",
     "password": "postgres",
     "database": "db_oxygen",
-    "host": "localhost",
+    "host": "host.docker.internal",
     "dialect": "postgres",
     "port": 5432
   },
@@ -11,7 +11,7 @@
     "username": "postgres",
     "password": "postgres",
     "database": "db_oxygen",
-    "host": "localhost",
+    "host": "host.docker.internal",
     "dialect": "postgres",
     "port": 5432
   },
@@ -19,7 +19,7 @@
     "username": "postgres",
     "password": "postgres",
     "database": "db_oxygen",
-    "host": "localhost",
+    "host": "host.docker.internal",
     "dialect": "postgres",
     "port": 5432
   }
