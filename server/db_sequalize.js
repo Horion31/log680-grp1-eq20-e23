@@ -1,7 +1,9 @@
 const { Sequelize, DataTypes, Model } = require('sequelize')
 
+require('dotenv').config()
+
 const sequelize = new Sequelize({
-    host: 'host.docker.internal',
+    host: '${process.env.POSTGRES_HOST}',
     database: 'postgres',
     username: 'postgres',
     password: 'postgres',
